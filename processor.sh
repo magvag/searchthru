@@ -8,6 +8,36 @@ cd "$(dirname "$0")"
 # curl -s -o bangs_ddg.json "https://duckduckgo.com/bang.js"
 # echo "Download complete."
 
+echo "Creating u/d domain diff..."
+jq -n --argfile kagi bangs_kagi.json --argfile ddg bangs_ddg.json \
+'
+  # Safely extracts domain from a URL string. Handles missing paths, query strings, and ports.
+  def get_domain_from_url:
+    if type == "string" then
+      # 1. Strip protocol, 2. Strip query string, 3. Strip path, 4. Strip port
+      sub("^https?://"; "") | split("?")[0] | split("/")[0] | split(":")[0]
+    else
+      empty # If .u is not a string, skip this entry
+    end;
+
+  # Process a list of bangs (kagi or ddg) to find diffs
+  def find_diffs:
+    map(
+      .u as $url | .d as $d |
+      ($url | get_domain_from_url) as $d_from_u |
+      if $d_from_u and ($d != $d_from_u) then
+        { (.t): [$d, $d_from_u] }
+      else
+        empty
+      end
+    ) | add;
+
+  ($kagi | find_diffs) as $kagi_diffs |
+  ($ddg | find_diffs) as $ddg_diffs |
+  $kagi_diffs + $ddg_diffs
+' > u_d_diff.json
+echo "u/d domain diff created."
+
 echo "Processing and flattening bangs..."
 jq --sort-keys '
   map(
@@ -39,26 +69,5 @@ jq --sort-keys '
   ) |
   map(if .d == "kagi.com" and (.u | startswith("/search?q=")) then .u |= ltrimstr("/search") else . end) | reduce .[] as $item ({}; . + {($item.t): $item.u} + reduce ($item.ts // [])[] as $ts ({}; . + {($ts): $item.u}))' bangs_kagi.json > flat_bangs_kagi.json
 echo "Flattening complete."
-
-echo "Creating diff files..."
-jq -n --argfile kagi flat_bangs_kagi.json --argfile ddg flat_bangs_ddg.json \
-  '$kagi | keys_unsorted as $kagi_keys | $ddg | keys_unsorted as $ddg_keys | ($kagi_keys - $ddg_keys) | map({(.): $kagi[.]}) | add' > kagi_ddg_diff.json
-jq -n --argfile ddg flat_bangs_ddg.json --argfile kagi flat_bangs_kagi.json \
-  '$ddg | keys_unsorted as $ddg_keys | $kagi | keys_unsorted as $kagi_keys | ($ddg_keys - $kagi_keys) | map({(.): $ddg[.]}) | add' > ddg_kagi_diff.json
-echo "Diff files created."
-
-echo "Creating URL diff file..."
-jq -n --argfile kagi flat_bangs_kagi.json --argfile ddg flat_bangs_ddg.json \
-  '
-  def normalize_url: sub("^https?://"; "");
-  ($kagi | keys) as $kagi_keys | ($ddg | keys) as $ddg_keys | ($kagi_keys - ($kagi_keys - $ddg_keys)) as $common_keys | reduce $common_keys[] as $key ({};
-    if ($kagi[$key] | normalize_url) != ($ddg[$key] | normalize_url) then
-      . + {($key): [$kagi[$key], $ddg[$key]]}
-    else
-      .
-    end
-  )
-' > url_diff.json
-echo "URL diff file created."
 
 echo "Processing complete."
