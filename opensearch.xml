@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
+<ShortName>SearchThru</ShortName>
+<Description>Search with a bang</Description>
+<InputEncoding>UTF-8</InputEncoding>
+<LongName>SearchThru, a search router.</LongName>
+<Image height="16" width="16" type="image/svg"></Image>
+<Url type="text/html" method="get" template="https://searchth.ru/?q={searchTerms}"/>
+<Url type="application/x-suggestions+json" template="https://duckduckgo.com/ac/?q={searchTerms}&amp;type=list"/>
+</OpenSearchDescription>
