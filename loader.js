@@ -6,10 +6,6 @@ async function loadBangs(jsonPath, dbName) {
         const data = await response.json();
         const request = indexedDB.open(dbName, BANG_DB_VERSION);
 
-        if (!db.objectStoreNames.contains(BANG_DATA_NAME)) {
-            db.createObjectStore(BANG_DATA_NAME, { keyPath: "key" });
-        }
-
         request.onupgradeneeded = (e) => {
             const db = e.target.result;
             if (!db.objectStoreNames.contains(BANG_DATA_NAME)) {
@@ -21,6 +17,10 @@ async function loadBangs(jsonPath, dbName) {
             request.onsuccess = () => resolve(request.result);
             request.onerror = () => reject(request.error);
         });
+
+        if (!db.objectStoreNames.contains(BANG_DATA_NAME)) {
+            db.createObjectStore(BANG_DATA_NAME, { keyPath: "key" });
+        }
 
         const transaction = db.transaction(BANG_DATA_NAME, "readwrite");
         const store = transaction.objectStore(BANG_DATA_NAME);
