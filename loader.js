@@ -4,7 +4,7 @@ async function loadBangs(jsonPath, dbName) {
         if (!response.ok) throw new Error("Failed to fetch JSON");
 
         const data = await response.json();
-        const request = indexedDB.open(dbName, 2);
+        const request = indexedDB.open(dbName, BANG_DB_VERSION);
 
         request.onupgradeneeded = (e) => {
             const db = e.target.result;

@@ -1,10 +1,11 @@
 const BANG_DB_NAME = "bangDB";
 const BANG_DATA_NAME = "bangData";
+const BANG_DB_VERSION = 2;
 const DEFAULT_BANG = localStorage.getItem("defaultBang") ?? "ddg";
 
 function openBangDB() {
     return new Promise((resolve, reject) => {
-        const req = indexedDB.open(BANG_DB_NAME, 1);
+        const req = indexedDB.open(BANG_DB_NAME, BANG_DB_VERSION);
         req.onsuccess = () => resolve(req.result);
         req.onerror = () => reject(req.error);
     });
