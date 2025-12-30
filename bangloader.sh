@@ -4,10 +4,8 @@ set -e
 cd "$(dirname "$0")"
 
 echo "Downloading raw bang data..."
-curl -s -o kagi_raw.json "https://raw.githubusercontent.com/kagisearch/bangs/master/data/bangs.json"
-curl -s -o ddg_raw.json "https://duckduckgo.com/bang.js"
-echo "Download complete."
-
+curl -s -o data/kagi_raw.json "https://raw.githubusercontent.com/kagisearch/bangs/master/data/bangs.json"
+curl -s -o data/ddg_raw.json "https://duckduckgo.com/bang.js"
 
 echo "Processing and flattening bangs..."
 
@@ -31,7 +29,7 @@ jq --sort-keys '
       .u |= (
         sub("^https?://duckduckgo\\.com/"; "")
         | if endswith("+{{{s}}}") and startswith("?q=site:") then
-            (sub("\\+{{{s}}}$"; "") | sub("\\?q="; "?q={{{s}}}+"))
+            (sub("\\+{{{s}}}$"; "") | sub("\\?q="; "{{{s}}}+"))
           else
             .
           end
@@ -49,11 +47,12 @@ jq --sort-keys '
         }
         +
         (if $item.fmt? then {fmt: $item.fmt} else {} end)
+        +
+        (if $item.ad? then {ad: $item.ad} else {} end)
       )
     }
   )
-' ddg_raw.json > ddg.json
-
+' data/ddg_raw.json > data/ddg.json
 
 # ----------------------------
 #  KAGI
@@ -72,7 +71,7 @@ jq --sort-keys '
   |
   map(
     if .d == "kagi.com" and (.u | startswith("/search?q=")) then
-      .u |= ltrimstr("/search")
+      .u |= ltrimstr("/search?q=")
     else
       .
     end
@@ -87,6 +86,8 @@ jq --sort-keys '
           }
           +
           (if $item.fmt? then {fmt: $item.fmt} else {} end)
+          +
+          (if $item.ad? then {ad: $item.ad} else {} end)
         )
       }
     +
@@ -99,11 +100,12 @@ jq --sort-keys '
             }
             +
             (if $item.fmt? then {fmt: $item.fmt} else {} end)
+            +
+            (if $item.ad? then {ad: $item.ad} else {} end)
           )
         }
       ))
   )
-' kagi_raw.json > kagi.json
+' data/kagi_raw.json > data/kagi.json
 
-echo "Flattening complete."
-echo "Processing complete."
+echo "All done."
