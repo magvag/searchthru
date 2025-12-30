@@ -45,7 +45,7 @@ function encodeQuery(query, fmt) {
     return query;
 }
 
-async function getRedirectURL(query) {
+function getRedirectURL(query) {
     const foundBangs = query.match(/![a-zA-Z0-9._-]+/g) ?? [];
     let bang = null;
     let usedBangKey = null;
@@ -127,6 +127,3 @@ async function getRedirectURL(query) {
     const template = defaultBang?.u ?? bang.u;
     return template.replace("{{{s}}}", encodedQuery);
 }
-
-// IN CASE THERE IS NO QUERY
-// AND USER ACTUALLY VISITED THE SEARCHTHRU PAGE

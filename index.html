@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
     <head>
-        <script id="router" src="router.js"></script>
+        <script id="router" src="/router.js"></script>
         <script>
             const url = new URL(window.location.href);
             const query = url.searchParams.get("q")?.trim() ?? "";
@@ -13,7 +13,14 @@
                 });
             }
         </script>
-        <script id="loader" src="loader.js" defer></script>
+        <script id="loader" src="/loader.js" defer></script>
+        <script>
+        if ("serviceWorker" in navigator) {
+          navigator.serviceWorker.register("/sw.js", { scope: "/" })
+            .catch(() => {});
+        }
+        </script>
+
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>SearchThru!</title>

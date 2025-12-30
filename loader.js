@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
     const loadDateStr = localStorage.getItem("load_date");
     if (
         !loadDateStr ||
-        new Date(loadDateStr) < new Date(Date.now() - 14) // 2 weeks old 14 * 24 * 60 * 60 * 1000
+        new Date(loadDateStr) < new Date(Date.now() - 14 * 24 * 60 * 60 * 1000) // 2 weeks old
     ) {
         loadBangs("/data/kagi.json", BANG_DB_NAME);
     }
