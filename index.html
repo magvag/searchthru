@@ -6,7 +6,7 @@
             const query = url.searchParams.get("q")?.trim() ?? "";
 
             if (!query) {
-                router.defer = true; // unblocks DOM parsing
+                router.defer = true; // unblock DOM parsing
             }
         </script>
         <script id="router" src="router.js" />
@@ -20,6 +20,12 @@
             sizes="32x32"
         />
         <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg" />
+        <link
+            rel="search"
+            type="application/opensearchdescription+xml"
+            title="SearchThru!"
+            href="/opensearch.xml"
+        />
     </head>
     <body>
         <h1>SearchThru!</h1>
