@@ -13,10 +13,7 @@ async function loadBangs(jsonPath, dbName) {
             }
         };
 
-        const db = await new Promise((resolve, reject) => {
-            request.onsuccess = () => resolve(request.result);
-            request.onerror = () => reject(request.error);
-        });
+        const db = await openBangDB();
 
         const transaction = db.transaction(BANG_DATA_NAME, "readwrite");
         const store = transaction.objectStore(BANG_DATA_NAME);

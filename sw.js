@@ -1,4 +1,4 @@
-const VERSION = "v1.10";
+const VERSION = "v1.11";
 
 self.addEventListener("install", (event) => {
     event.waitUntil(
@@ -6,6 +6,7 @@ self.addEventListener("install", (event) => {
             return cache.addAll([
                 "/",
                 "/index.html",
+                "global.css",
                 "/router.js",
                 "/loader.js",
                 "/assets/favicon.png",
