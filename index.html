@@ -20,6 +20,7 @@
                 getRedirectURL(query).then((searchUrl) => {
                     if (searchUrl) window.location.replace(searchUrl);
                 });
+                await new Promise(r => setTimeout(r, 200));
             }
         </script>
         <script id="loader" src="/loader.js" defer></script>
