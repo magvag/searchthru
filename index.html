@@ -4,12 +4,13 @@
         <script>
             const url = new URL(window.location.href);
             const query = url.searchParams.get("q")?.trim() ?? "";
+            const router = document.getElementById("router");
 
             if (!query) {
                 router.defer = true; // unblock DOM parsing
             }
         </script>
-        <script id="router" src="router.js" />
+        <script id="router" src="router.js"></script>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>SearchThru!</title>
