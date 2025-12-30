@@ -6,6 +6,6 @@
 <LongName>SearchThru, a local search router.</LongName>
 <Image height="16" width="16" type="image/png">https://searchth.ru/assets/favicon.png</Image>
 <Url type="text/html" method="get" template="https://searchth.ru/?q={searchTerms}"/>
-<Url type="application/json" rel="suggestions" template="https://duckduckgo.com/ac/?q={searchTerms}&amp;type=list" />
+<Url type="application/x-suggestions+json" template="https://duckduckgo.com/ac/?q={searchTerms}&amp;type=list"/>
 <Url type="application/opensearchdescription+xml" rel="self" template="https://searchth.ru/opensearch.xml" />
 </OpenSearchDescription>

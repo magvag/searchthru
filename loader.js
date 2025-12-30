@@ -4,12 +4,12 @@ async function loadBangs(jsonPath, dbName) {
         if (!response.ok) throw new Error("Failed to fetch JSON");
 
         const data = await response.json();
-        const request = indexedDB.open(dbName, 1);
+        const request = indexedDB.open(dbName, 2);
 
         request.onupgradeneeded = (e) => {
             const db = e.target.result;
             if (!db.objectStoreNames.contains(BANG_DATA_NAME)) {
-                db.createObjectStore(BANG_DATA_NAME, { keyPath: "key" });
+                db.createObjectStore(BANG_DATA_NAME);
             }
         };
 
@@ -18,16 +18,16 @@ async function loadBangs(jsonPath, dbName) {
             request.onerror = () => reject(request.error);
         });
 
-        const transaction = db.transaction(BANG_DATA_NAME, "readwrite");
-        const store = transaction.objectStore(BANG_DATA_NAME);
+        const tx = db.transaction(BANG_DATA_NAME, "readwrite");
+        const store = tx.objectStore(BANG_DATA_NAME);
 
-        Object.entries(data).forEach(([key, value]) => {
-            store.put({ key, value });
-        });
+        for (const [key, value] of Object.entries(data)) {
+            store.put(value, key);
+        }
 
         await new Promise((resolve, reject) => {
-            transaction.oncomplete = () => resolve();
-            transaction.onerror = () => reject(transaction.error);
+            tx.oncomplete = resolve;
+            tx.onerror = () => reject(tx.error);
         });
 
         localStorage.setItem("load_date", new Date().toISOString());
@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
     const loadDateStr = localStorage.getItem("load_date");
     if (
         !loadDateStr ||
-        new Date(loadDateStr) < new Date(Date.now() - 14 * 24 * 60 * 60 * 1000) // 2 weeks old
+        new Date(loadDateStr) < new Date(Date.now() - 14) // 2 weeks old * 24 * 60 * 60 * 1000
     ) {
         loadBangs("/data/kagi.json", BANG_DB_NAME);
     }
