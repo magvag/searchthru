@@ -1,16 +1,19 @@
 <!doctype html>
 <html lang="en">
     <head>
+        <script id="router" src="router.js"></script>
         <script>
             const url = new URL(window.location.href);
             const query = url.searchParams.get("q")?.trim() ?? "";
             const router = document.getElementById("router");
 
-            if (!query) {
-                router.defer = true; // unblock DOM parsing
+            if (query) {
+                getRedirectURL(query).then((url) => {
+                    if (url) window.location.href = url;
+                });
             }
         </script>
-        <script id="router" src="router.js"></script>
+        <script id="loader" src="loader.js" defer></script>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>SearchThru!</title>
