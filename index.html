@@ -8,8 +8,8 @@
             const router = document.getElementById("router");
 
             if (query) {
-                getRedirectURL(query).then((url) => {
-                    if (url) window.location.href = url;
+                getRedirectURL(query).then((searchUrl) => {
+                    if (searchUrl) window.location.replace(searchUrl);
                 });
             }
         </script>
