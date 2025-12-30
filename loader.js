@@ -6,6 +6,10 @@ async function loadBangs(jsonPath, dbName) {
         const data = await response.json();
         const request = indexedDB.open(dbName, BANG_DB_VERSION);
 
+        if (!db.objectStoreNames.contains(BANG_DATA_NAME)) {
+            db.createObjectStore(BANG_DATA_NAME, { keyPath: "key" });
+        }
+
         request.onupgradeneeded = (e) => {
             const db = e.target.result;
             if (!db.objectStoreNames.contains(BANG_DATA_NAME)) {

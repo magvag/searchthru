@@ -1,6 +1,6 @@
 const BANG_DB_NAME = "bangDB";
 const BANG_DATA_NAME = "bangData";
-const BANG_DB_VERSION = 3;
+const BANG_DB_VERSION = 4;
 const DEFAULT_BANG = localStorage.getItem("defaultBang") ?? "ddg";
 
 function openBangDB() {
