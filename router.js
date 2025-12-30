@@ -133,7 +133,7 @@ const url = new URL(window.location.href);
 const query = url.searchParams.get("q")?.trim() ?? "";
 
 if (query) {
-    document.documentElement.style.display = "none";
+    document.body.style.visibility = "hidden";
     getRedirectURL(query).then((searchUrl) => {
         if (searchUrl) window.location.replace(searchUrl);
     });
