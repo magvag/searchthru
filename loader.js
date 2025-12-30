@@ -18,10 +18,6 @@ async function loadBangs(jsonPath, dbName) {
             request.onerror = () => reject(request.error);
         });
 
-        if (!db.objectStoreNames.contains(BANG_DATA_NAME)) {
-            db.createObjectStore(BANG_DATA_NAME, { keyPath: "key" });
-        }
-
         const transaction = db.transaction(BANG_DATA_NAME, "readwrite");
         const store = transaction.objectStore(BANG_DATA_NAME);
 
