@@ -45,7 +45,7 @@ function encodeQuery(query, fmt) {
     return query;
 }
 
-function getRedirectURL(query) {
+async function getRedirectURL(query) {
     const foundBangs = query.match(/![a-zA-Z0-9._-]+/g) ?? [];
     let bang = null;
     let usedBangKey = null;

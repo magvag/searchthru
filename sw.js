@@ -8,6 +8,9 @@ self.addEventListener("install", (event) => {
                 "/index.html",
                 "/global.css",
                 "/router.js",
+                "/loader.js",
+                "/assets/favicon.png",
+                "/assets/favicon.svg"
             ]);
         }),
     );
