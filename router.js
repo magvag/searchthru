@@ -128,3 +128,13 @@ async function getRedirectURL(query) {
     const template = defaultBang?.u ?? bang.u;
     return template.replace("{{{s}}}", encodedQuery);
 }
+
+const url = new URL(window.location.href);
+const query = url.searchParams.get("q")?.trim() ?? "";
+
+if (query) {
+    document.documentElement.style.display = "none";
+    getRedirectURL(query).then((searchUrl) => {
+        if (searchUrl) window.location.replace(searchUrl);
+    });
+}

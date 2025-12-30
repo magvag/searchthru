@@ -11,20 +11,9 @@
         }
         </style>
         <script>
-            const url = new URL(window.location.href);
-            const query = url.searchParams.get("q")?.trim() ?? "";
-            const router = document.getElementById("router");
-
-            if (query) {
-                document.documentElement.style.display = "none";
-                getRedirectURL(query).then((searchUrl) => {
-                    if (searchUrl) window.location.replace(searchUrl);
-                });
-                setTimeout(() => {}, "300");
-            }
         </script>
         <script id="loader" src="/loader.js" defer></script>
-        <script>
+        <script defer>
         if ("serviceWorker" in navigator) {
           navigator.serviceWorker.register("/sw.js", { scope: "/" })
             .catch(() => {});

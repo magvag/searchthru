@@ -1,4 +1,4 @@
-const VERSION = "v1.8";
+const VERSION = "v1.9";
 
 self.addEventListener("install", (event) => {
     event.waitUntil(
@@ -10,7 +10,7 @@ self.addEventListener("install", (event) => {
                 "/router.js",
                 "/loader.js",
                 "/assets/favicon.png",
-                "/assets/favicon.svg"
+                "/assets/favicon.svg",
             ]);
         }),
     );
