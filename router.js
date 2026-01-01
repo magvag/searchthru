@@ -144,7 +144,6 @@ async function getRedirectURL(searchQuery, bangKey, bang) {
                 return new URL(bang.u.replace("{{{s}}}", "")).origin;
             } catch {
                 // case of "!pdf", just do "+filetype:pdf" searchQuery in selected search engine
-                }
             }
         }
 
@@ -198,7 +197,6 @@ function encodeQuery(query, fmt) {
 
     return query;
 }
-
 
 const url = new URL(window.location.href);
 const query = url.searchParams.get("q")?.trim() ?? "";
