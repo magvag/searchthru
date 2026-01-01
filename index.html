@@ -3,39 +3,37 @@
     <head>
         <script id="router" src="/router.js"></script>
         <style>
-        :root {
-            color-scheme: light dark;
-            --primary: light-dark(#fff, #111);
-            background-color: var(--primary);
+            :root {
+                color-scheme: light dark;
+                --primary: light-dark(#fff, #111);
+                background-color: var(--primary);
 
-            visibility: hidden;
-        }
-        </style>
-        <script>
-        </script>
-        <script id="loader" src="/loader.js" defer></script>
-        <script defer>
-        if ("serviceWorker" in navigator) {
-            //
-            if (!query) {
-                const loadDateStr = localStorage.getItem("load_date");
-                if (
-                    !loadDateStr ||
-                    new Date(loadDateStr) < new Date(Date.now() - 14 * 24 * 60 * 60 * 1000) // older than 2 weeks
-                ) {
-                    const regs = await navigator.serviceWorker.getRegistrations();
-                    await Promise.all(regs.map(r => r.unregister()));
-                }
+                visibility: hidden;
             }
-            navigator.serviceWorker.register("/sw.js", { scope: "/" })
-            .catch(() => {});
-        }
+        </style>
+        <script></script>
+        <script defer>
+            if ("serviceWorker" in navigator) {
+                //
+                if (!query) {
+                    const loadDateStr = localStorage.getItem("load_date");
+                    if (
+                        !loadDateStr ||
+                        new Date(loadDateStr) < new Date(Date.now() - 14 * 24 * 60 * 60 * 1000) // older than 2 weeks
+                    ) {
+                        const regs = await navigator.serviceWorker.getRegistrations();
+                        await Promise.all(regs.map(r => r.unregister()));
+                    }
+                }
+                navigator.serviceWorker.register("/sw.js", { scope: "/" })
+                .catch(() => {});
+            }
         </script>
 
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>SearchThru!</title>
-        <link rel="stylesheet" href="/global.css">
+        <link rel="stylesheet" href="/global.css" />
         <link
             rel="icon"
             type="image/png"

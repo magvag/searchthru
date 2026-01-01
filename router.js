@@ -1,7 +1,9 @@
 const DB_NAME = "bangDB";
 const BANG_STORE_NAME = "bangData";
+const CACHE_STORE_NAME = "bangCache";
 const DB_VERSION = 4;
 const DEFAULT_BANG_KEY = localStorage.getItem("defaultBang") ?? "ddg";
+const FALLBACK_BANG_VALUE = { u: "https://duckduckgo.com/?q={{{s}}}" };
 
 function openBangDB() {
     return new Promise((resolve, reject) => {
@@ -47,25 +49,25 @@ function encodeQuery(query, fmt) {
 }
 
 async function getRedirectURL(query) {
-    const foundBangs = query.match(/![a-zA-Z0-9._-]+/g) ?? [];
+    const foundBangKeys = query.match(/![a-zA-Z0-9._-]+/g) ?? [];
     let bang = null;
-    let usedBangKey = null;
+    let bangKey = null;
 
     // 1–2. resolve bang
     const db = await openBangDB();
-    for (let i = 0; i < foundBangs.length; i++) {
-        const key = foundBangs[i].slice(1).toLowerCase();
+    for (let i = 0; i < foundBangKeys.length; i++) {
+        const key = foundBangKeys[i].slice(1).toLowerCase();
         const hit = await IDB_get(db, key);
         if (hit) {
             bang = hit;
-            usedBangKey = key;
+            bangKey = key;
             break;
         }
     }
 
     if (!bang) {
         bang = await IDB_get(db, DEFAULT_BANG_KEY);
-        usedBangKey = DEFAULT_BANG_KEY;
+        bangKey = DEFAULT_BANG_KEY;
     }
 
     if (!bang) return null;
@@ -74,7 +76,7 @@ async function getRedirectURL(query) {
     let searchQuery = query;
     if (bang) {
         searchQuery = searchQuery
-            .replace(new RegExp(`!${usedBangKey}(?=\\s|$)`), "")
+            .replace(new RegExp(`!${bangKey}(?=\\s|$)`), "")
             .trim();
     }
     searchQuery = searchQuery.trim();
