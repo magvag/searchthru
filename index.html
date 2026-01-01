@@ -16,7 +16,18 @@
         <script id="loader" src="/loader.js" defer></script>
         <script defer>
         if ("serviceWorker" in navigator) {
-          navigator.serviceWorker.register("/sw.js", { scope: "/" })
+            //
+            if (!query) {
+                const loadDateStr = localStorage.getItem("load_date");
+                if (
+                    !loadDateStr ||
+                    new Date(loadDateStr) < new Date(Date.now() - 14 * 24 * 60 * 60 * 1000) // older than 2 weeks
+                ) {
+                    const regs = await navigator.serviceWorker.getRegistrations();
+                    await Promise.all(regs.map(r => r.unregister()));
+                }
+            }
+            navigator.serviceWorker.register("/sw.js", { scope: "/" })
             .catch(() => {});
         }
         </script>

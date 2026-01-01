@@ -1,11 +1,11 @@
-const BANG_DB_NAME = "bangDB";
-const BANG_DATA_NAME = "bangData";
-const BANG_DB_VERSION = 4;
-const DEFAULT_BANG = localStorage.getItem("defaultBang") ?? "ddg";
+const DB_NAME = "bangDB";
+const BANG_STORE_NAME = "bangData";
+const DB_VERSION = 4;
+const DEFAULT_BANG_KEY = localStorage.getItem("defaultBang") ?? "ddg";
 
 function openBangDB() {
     return new Promise((resolve, reject) => {
-        const req = indexedDB.open(BANG_DB_NAME, BANG_DB_VERSION);
+        const req = indexedDB.open(DB_NAME, DB_VERSION);
         req.onsuccess = () => resolve(req.result);
         req.onerror = () => reject(req.error);
     });
@@ -13,8 +13,8 @@ function openBangDB() {
 
 async function IDB_get(db, key) {
     return new Promise((resolve, reject) => {
-        const tx = db.transaction(BANG_DATA_NAME, "readonly");
-        const store = tx.objectStore(BANG_DATA_NAME);
+        const tx = db.transaction(BANG_STORE_NAME, "readonly");
+        const store = tx.objectStore(BANG_STORE_NAME);
         const req = store.get(key);
         req.onsuccess = () => resolve(req.result?.value ?? null);
         req.onerror = () => reject(req.error);
@@ -64,8 +64,8 @@ async function getRedirectURL(query) {
     }
 
     if (!bang) {
-        bang = await IDB_get(db, DEFAULT_BANG);
-        usedBangKey = DEFAULT_BANG;
+        bang = await IDB_get(db, DEFAULT_BANG_KEY);
+        usedBangKey = DEFAULT_BANG_KEY;
     }
 
     if (!bang) return null;
@@ -119,7 +119,7 @@ async function getRedirectURL(query) {
     let defaultBang = bang;
     if (hasSearchOperator) {
         searchQuery = bang.u.replace("{{{s}}}", searchQuery);
-        defaultBang = await IDB_get(db, DEFAULT_BANG);
+        defaultBang = await IDB_get(db, DEFAULT_BANG_KEY);
         fmt = defaultBang.fmt ?? [];
     }
 
