@@ -1,33 +1,69 @@
-const VERSION = "v1.15";
+const VERSION = "v1.16";
 const DB_NAME = "bangDB";
 const BANG_STORE_NAME = "bangData";
 const DB_VERSION = 4;
 const BANGS_JSON_PATH = "/data/kagi.json";
+const BANGS_TTL = 14 * 24 * 60 * 60 * 1000; // 2 weeks
+const CACHED_AT_HEADER = "sw-cached-at";
 
 self.addEventListener("install", (event) => {
     event.waitUntil(
-        caches.open(VERSION).then((cache) => {
-            return cache.addAll([
+        (async () => {
+            const cache = await caches.open(VERSION);
+
+            await cache.addAll([
                 "/",
                 "/index.html",
-                "global.css",
+                "/global.css",
                 "/router.js",
                 "/assets/favicon.png",
                 "/assets/favicon.svg",
-                BANGS_JSON_PATH,
             ]);
-        }),
+
+            const res = await fetch(BANGS_JSON_PATH);
+            const stamped = new Response(res.body, {
+                headers: {
+                    ...Object.fromEntries(res.headers),
+                    [CACHED_AT_HEADER]: Date.now().toString(),
+                },
+            });
+
+            await cache.put(BANGS_JSON_PATH, stamped);
+        })(),
     );
 });
 
 async function loadBangs() {
+    const cache = await caches.open(VERSION);
+    const cached = await cache.match(BANGS_JSON_PATH);
+
+    // some code to auto update bangs every 2 weeks
+    // since it’s called upon activation, and SW is activated after routing,
+    // no performance loss should happen
+    let response = cached;
+
+    if (cached) {
+        const cachedAt = Number(cached.headers.get(CACHED_AT_HEADER));
+        if (!cachedAt || Date.now() - cachedAt > BANGS_TTL) {
+            await cache.delete(BANGS_JSON_PATH);
+            response = null;
+        }
+    }
+
+    if (!response) {
+        const res = await fetch(BANGS_JSON_PATH);
+        response = new Response(res.body, {
+            headers: {
+                ...Object.fromEntries(res.headers),
+                [CACHED_AT_HEADER]: Date.now().toString(),
+            },
+        });
+        await cache.put(BANGS_JSON_PATH, response.clone());
+    }
+
+    const data = await response.json();
+
     try {
-        const cached = await caches.match(BANGS_JSON_PATH);
-        const response = cached || (await fetch(BANGS_JSON_PATH));
-        if (!response.ok) throw new Error("Failed to fetch JSON");
-
-        const data = await response.json();
-
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(DB_NAME, DB_VERSION);
 
@@ -53,7 +89,6 @@ async function loadBangs() {
                 });
 
                 transaction.oncomplete = () => {
-                    localStorage.setItem("load_date", new Date().toISOString());
                     console.log(
                         `Loaded ${Object.keys(data).length} bangs into IndexedDB successfully.`,
                     );
