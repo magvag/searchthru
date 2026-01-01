@@ -1,4 +1,4 @@
-const VERSION = "v1.14";
+const VERSION = "v1.15";
 const DB_NAME = "bangDB";
 const BANG_STORE_NAME = "bangData";
 const DB_VERSION = 4;
@@ -81,7 +81,7 @@ self.addEventListener("activate", (event) => {
                             .map((key) => caches.delete(key)),
                     ),
                 ),
-            loadBangsIntoDB(),
+            loadBangs(),
         ]),
     );
     self.clients.claim();
