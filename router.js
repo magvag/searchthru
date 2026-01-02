@@ -69,19 +69,7 @@ async function getBang(query) {
     const foundBangKeys = query.match(/![a-zA-Z0-9._-]+/g) ?? [];
     let searchQuery = query;
 
-    // Check if bangData store exists first (is incognito?)
-    const dbCheck = await new Promise((resolve) => {
-        const req = indexedDB.open(DB_NAME, DB_VERSION);
-        req.onsuccess = (e) => {
-            const db = e.target.result;
-            const exists = db.objectStoreNames.contains(BANG_STORE_NAME);
-            db.close();
-            resolve(exists);
-        };
-        req.onerror = () => resolve(false);
-    });
-
-    if (!dbCheck) {
+    if (!indexedDB.databases) {
         return { searchQuery, bangKey: "ddg", bang: FALLBACK_BANG };
     }
 
