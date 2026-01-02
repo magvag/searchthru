@@ -1,7 +1,8 @@
 const VERSION = "v1.16";
 const DB_NAME = "bangDB";
 const BANG_STORE_NAME = "bangData";
-const DB_VERSION = 4;
+const CACHE_STORE_NAME = "bangCache";
+const DB_VERSION = 5;
 const BANGS_JSON_PATH = "/data/kagi.json";
 const BANGS_TTL = 14 * 24 * 60 * 60 * 1000; // 2 weeks
 const CACHED_AT_HEADER = "sw-cached-at";
@@ -73,6 +74,10 @@ async function loadBangs() {
                 const db = e.target.result;
                 if (!db.objectStoreNames.contains(BANG_STORE_NAME)) {
                     db.createObjectStore(BANG_STORE_NAME, { keyPath: "key" });
+                }
+
+                if (!db.objectStoreNames.contains(CACHE_STORE_NAME)) {
+                    db.createObjectStore(CACHE_STORE_NAME, { keyPath: "key" });
                 }
             };
 

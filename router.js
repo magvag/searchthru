@@ -9,6 +9,16 @@ async function getBangFromDB(bangKey) {
     return new Promise((resolve, reject) => {
         const request = indexedDB.open(DB_NAME, DB_VERSION);
 
+        request.onupgradeneeded = (e) => {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains(BANG_STORE_NAME)) {
+                db.createObjectStore(BANG_STORE_NAME, { keyPath: "key" });
+            }
+            if (!db.objectStoreNames.contains(CACHE_STORE_NAME)) {
+                db.createObjectStore(CACHE_STORE_NAME, { keyPath: "key" });
+            }
+        };
+
         request.onerror = () => reject(request.error);
 
         request.onsuccess = (e) => {
