@@ -78,6 +78,8 @@ async function loadBangs() {
 
             request.onsuccess = (e) => {
                 const db = e.target.result;
+                db.createObjectStore(BANG_STORE_NAME, { keyPath: "key" });
+
                 const transaction = db.transaction(
                     BANG_STORE_NAME,
                     "readwrite",
