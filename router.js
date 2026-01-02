@@ -1,13 +1,13 @@
 const DB_NAME = "bangDB";
 const BANG_STORE_NAME = "bangData";
 const CACHE_STORE_NAME = "bangCache";
-const DB_VERSION = 5;
+const DB_SCHEMA = 5;
 const DEFAULT_BANG_KEY = localStorage.getItem("defaultBang") ?? "ddg"; // bangKey is !this
 const FALLBACK_BANG = { u: "https://duckduckgo.com/?q={{{s}}}" }; // bang is all the redirect rules
 
 async function getBangFromDB(bangKey) {
     return new Promise((resolve, reject) => {
-        const request = indexedDB.open(DB_NAME, DB_VERSION);
+        const request = indexedDB.open(DB_NAME, DB_SCHEMA);
 
         request.onupgradeneeded = (e) => {
             const db = e.target.result;

@@ -2,71 +2,27 @@ const VERSION = "v1.16";
 const DB_NAME = "bangDB";
 const BANG_STORE_NAME = "bangData";
 const CACHE_STORE_NAME = "bangCache";
-const DB_VERSION = 5;
+const DB_SCHEMA = 5;
 const BANGS_JSON_PATH = "/data/kagi.json";
-const BANGS_TTL = 14 * 24 * 60 * 60 * 1000; // 2 weeks
-const CACHED_AT_HEADER = "sw-cached-at";
+const CACHED_VERSION_HEADER = "x-cached-version";
 
-self.addEventListener("install", (event) => {
-    event.waitUntil(
-        (async () => {
-            const cache = await caches.open(VERSION);
-
-            await cache.addAll([
-                "/",
-                "/index.html",
-                "/global.css",
-                "/router.js",
-                "/assets/favicon.png",
-                "/assets/favicon.svg",
-            ]);
-
-            const res = await fetch(BANGS_JSON_PATH);
-            const stamped = new Response(res.body, {
-                headers: {
-                    ...Object.fromEntries(res.headers),
-                    [CACHED_AT_HEADER]: Date.now().toString(),
-                },
-            });
-
-            await cache.put(BANGS_JSON_PATH, stamped);
-        })(),
-    );
-});
+function currentMonthVersion() {
+    const d = new Date();
+    const y = d.getUTCFullYear();
+    const m = String(d.getUTCMonth() + 1).padStart(2, "0");
+    return `${y}-${m}`; // 2026-01
+}
 
 async function loadBangs() {
     const cache = await caches.open(VERSION);
     const cached = await cache.match(BANGS_JSON_PATH);
-
-    // some code to auto update bangs every 2 weeks
-    // since it’s called upon activation, and SW is activated after routing,
-    // no performance loss should happen
     let response = cached;
-
-    if (cached) {
-        const cachedAt = Number(cached.headers.get(CACHED_AT_HEADER));
-        if (!cachedAt || Date.now() - cachedAt > BANGS_TTL) {
-            await cache.delete(BANGS_JSON_PATH);
-            response = null;
-        }
-    }
-
-    if (!response) {
-        const res = await fetch(BANGS_JSON_PATH);
-        response = new Response(res.body, {
-            headers: {
-                ...Object.fromEntries(res.headers),
-                [CACHED_AT_HEADER]: Date.now().toString(),
-            },
-        });
-        await cache.put(BANGS_JSON_PATH, response.clone());
-    }
 
     const data = await response.json();
 
     try {
         return new Promise((resolve, reject) => {
-            const request = indexedDB.open(DB_NAME, DB_VERSION);
+            const request = indexedDB.open(DB_NAME, DB_SCHEMA);
 
             request.onerror = () => reject(request.error);
 
@@ -110,6 +66,35 @@ async function loadBangs() {
     }
 }
 
+self.addEventListener("install", (event) => {
+    event.waitUntil(
+        (async () => {
+            const cache = await caches.open(VERSION);
+
+            await cache.addAll([
+                "/",
+                "/index.html",
+                "/global.css",
+                "/router.js",
+                "/assets/favicon.png",
+                "/assets/favicon.svg",
+            ]);
+
+            const version = currentMonthVersion();
+            const res = await fetch(BANGS_JSON_PATH);
+            const stamped = new Response(res.body, {
+                headers: {
+                    ...Object.fromEntries(res.headers),
+                    [CACHED_VERSION_HEADER]: version,
+                },
+            });
+
+            await cache.put(BANGS_JSON_PATH, stamped);
+            await loadBangs();
+        })(),
+    );
+});
+
 self.addEventListener("activate", (event) => {
     event.waitUntil(
         Promise.all([
@@ -122,7 +107,6 @@ self.addEventListener("activate", (event) => {
                             .map((key) => caches.delete(key)),
                     ),
                 ),
-            loadBangs(),
         ]),
     );
     self.clients.claim();
@@ -134,4 +118,36 @@ self.addEventListener("fetch", (event) => {
             return cached || fetch(event.request);
         }),
     );
+});
+
+self.addEventListener("message", async (e) => {
+    if (e.data?.type !== "UPDATE_DB") return;
+
+    const cache = await caches.open(VERSION);
+    const cached = await cache.match(BANGS_JSON_PATH);
+
+    const expected = currentMonthVersion();
+    let expired = true;
+
+    if (cached) {
+        const cachedVersion = Number(cached.headers.get(CACHED_VERSION_HEADER));
+        expired = cachedVersion !== expected;
+    }
+
+    if (expired) {
+        const res = await fetch(BANGS_JSON_PATH);
+        const stamped = new Response(res.body, {
+            headers: {
+                ...Object.fromEntries(res.headers),
+                [CACHED_VERSION_HEADER]: expected,
+            },
+        });
+
+        await cache.put(BANGS_JSON_PATH, stamped);
+        await loadBangs();
+
+        e.source?.postMessage({ type: "UPDATED" });
+    } else {
+        e.source?.postMessage({ type: "UP_TO_DATE" });
+    }
 });
