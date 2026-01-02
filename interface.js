@@ -1,5 +1,8 @@
 // every homepage visit ask SW to update DB if neccessary
 document.addEventListener("DOMContentLoaded", () => {
+    const url = new URL(window.location.href);
+    const query = url.searchParams.get("q")?.trim() ?? "";
+
     if (!query) {
         navigator.serviceWorker.ready.then((reg) => {
             reg.active?.postMessage({ type: "UPDATE_DB" });
