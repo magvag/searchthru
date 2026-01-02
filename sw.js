@@ -1,4 +1,4 @@
-const VERSION = "v1.17";
+const VERSION = "v1.18";
 const DB_NAME = "bangDB";
 const BANG_STORE_NAME = "bangData";
 const CACHE_STORE_NAME = "bangCache";

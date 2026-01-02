@@ -1,7 +1,6 @@
 <!doctype html>
 <html lang="en">
     <head>
-        <script id="router" src="/router.js"></script>
         <style>
             :root {
                 color-scheme: light dark;
@@ -11,6 +10,14 @@
                 visibility: hidden;
             }
         </style>
+        <link
+            id="homepageStylesheet"
+            rel="stylesheet"
+            href="/global.css"
+            media="print"
+        />
+
+        <script id="router" src="/router.js" async></script>
         <script src="/interface.js" defer></script>
         <script defer>
             if ("serviceWorker" in navigator) {
@@ -23,7 +30,6 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>SearchThru!</title>
-        <link rel="stylesheet" href="/global.css" />
         <link
             rel="icon"
             type="image/png"

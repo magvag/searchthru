@@ -208,5 +208,6 @@ if (query) {
             if (searchUrl) window.location.replace(searchUrl);
         });
 } else {
+    homepageStylesheet.removeAttribute("media");
     document.documentElement.style.visibility = "visible"; // best way to avoid white flashbang is to assume document is hidden until disproven
 }
