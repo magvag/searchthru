@@ -1,28 +1,26 @@
-const VERSION = "v1.16";
+const VERSION = "v1.17";
 const DB_NAME = "bangDB";
 const BANG_STORE_NAME = "bangData";
 const CACHE_STORE_NAME = "bangCache";
-const DB_SCHEMA = 5;
+const DB_VERSION = 5;
 const BANGS_JSON_PATH = "/data/kagi.json";
-const CACHED_VERSION_HEADER = "x-cached-version";
-
-function currentMonthVersion() {
-    const d = new Date();
-    const y = d.getUTCFullYear();
-    const m = String(d.getUTCMonth() + 1).padStart(2, "0");
-    return `${y}-${m}`; // 2026-01
-}
+const MONTH = 31 * 24 * 60 * 60 * 1000;
 
 async function loadBangs() {
     const cache = await caches.open(VERSION);
     const cached = await cache.match(BANGS_JSON_PATH);
     let response = cached;
 
+    // If no cached version, fetch from network
+    if (!response) {
+        response = await fetch(BANGS_JSON_PATH);
+    }
+
     const data = await response.json();
 
     try {
         return new Promise((resolve, reject) => {
-            const request = indexedDB.open(DB_NAME, DB_SCHEMA);
+            const request = indexedDB.open(DB_NAME, DB_VERSION);
 
             request.onerror = () => reject(request.error);
 
@@ -80,16 +78,8 @@ self.addEventListener("install", (event) => {
                 "/assets/favicon.svg",
             ]);
 
-            const version = currentMonthVersion();
             const res = await fetch(BANGS_JSON_PATH);
-            const stamped = new Response(res.body, {
-                headers: {
-                    ...Object.fromEntries(res.headers),
-                    [CACHED_VERSION_HEADER]: version,
-                },
-            });
-
-            await cache.put(BANGS_JSON_PATH, stamped);
+            await cache.put(BANGS_JSON_PATH, res);
             await loadBangs();
         })(),
     );
@@ -126,24 +116,20 @@ self.addEventListener("message", async (e) => {
     const cache = await caches.open(VERSION);
     const cached = await cache.match(BANGS_JSON_PATH);
 
-    const expected = currentMonthVersion();
     let expired = true;
 
     if (cached) {
-        const cachedVersion = Number(cached.headers.get(CACHED_VERSION_HEADER));
-        expired = cachedVersion !== expected;
+        const lastModifiedHeader = cached.headers.get("Last-Modified");
+        if (lastModifiedHeader) {
+            const cachedDate = new Date(lastModifiedHeader).getTime();
+            const now = Date.now();
+            expired = now - cachedDate > MONTH;
+        }
     }
 
     if (expired) {
         const res = await fetch(BANGS_JSON_PATH);
-        const stamped = new Response(res.body, {
-            headers: {
-                ...Object.fromEntries(res.headers),
-                [CACHED_VERSION_HEADER]: expected,
-            },
-        });
-
-        await cache.put(BANGS_JSON_PATH, stamped);
+        await cache.put(BANGS_JSON_PATH, res);
         await loadBangs();
 
         e.source?.postMessage({ type: "UPDATED" });
