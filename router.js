@@ -1,7 +1,7 @@
 const DB_NAME = "bangDB";
 const BANG_STORE_NAME = "bangData";
 const CACHE_STORE_NAME = "bangCache";
-const DB_VERSION = 4;
+const DB_VERSION = 5;
 const DEFAULT_BANG_KEY = localStorage.getItem("defaultBang") ?? "ddg"; // bangKey is !this
 const FALLBACK_BANG = { u: "https://duckduckgo.com/?q={{{s}}}" }; // bang is all the redirect rules
 
