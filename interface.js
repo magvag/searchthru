@@ -122,7 +122,7 @@ const renderHomepage = (strings) => {
             localStorage.removeItem("defaultBang");
             return;
         }
-        const normalized = value.startsWith("!") ? value : `!${value}`;
+        const normalized = value.startsWith("!") ? value : `${value}`;
         localStorage.setItem("defaultBang", normalized);
     });
     body.append(input);
