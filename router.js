@@ -76,7 +76,7 @@ async function getBangFromDB(bangKey) {
 }
 
 async function getBang(query) {
-    const foundBangKeys = query.match(/![a-zA-Z0-9._-]+/g) ?? [];
+    const foundBangKeys = query.match(/![^!\s]+/g) ?? [];
     let searchQuery = query;
 
     if (!indexedDB.databases) {
