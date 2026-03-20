@@ -8,12 +8,24 @@
                     "text": "right click on URL, select ",
                     "highlight": "Add “Thru!”"
                 },
-                "about:settings#search, set as default search engine"
+                {
+                    "link": {
+                        "href": "about:settings#search",
+                        "text": "about:settings#search"
+                    },
+                    "textAfter": ", set as default search engine"
+                }
             ]
         },
         "chromeMobile": {
             "steps": [
-                "chrome://settings/searchEngines — add new search engine",
+                {
+                    "link": {
+                        "href": "chrome://settings/searchEngines",
+                        "text": "chrome://settings/searchEngines"
+                    },
+                    "textAfter": " — add new search engine"
+                },
                 {
                     "text": "Name: Thru!, Key: thru, Link: ",
                     "highlight": "https://searchth.ru/?q=%s"
@@ -23,7 +35,13 @@
         },
         "firefoxMobile": {
             "steps": [
-                "about:settings#search — add new search engine",
+                {
+                    "link": {
+                        "href": "about:settings#search",
+                        "text": "about:settings#search"
+                    },
+                    "textAfter": " — add new search engine"
+                },
                 {
                     "text": "Name: Thru!, Key: thru, Link: ",
                     "highlight": "https://searchth.ru/?q=%s"

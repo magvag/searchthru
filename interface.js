@@ -48,6 +48,19 @@ const appendStep = (li, step) => {
         if (typeof step.text === "string") {
             li.append(step.text);
         }
+        if (step.link) {
+            const anchor = document.createElement("a");
+            if (typeof step.link === "string") {
+                anchor.href = step.link;
+                anchor.textContent = step.linkText || step.link;
+            } else if (typeof step.link === "object") {
+                anchor.href = step.link.href || "";
+                anchor.textContent = step.link.text || step.link.href || "";
+            }
+            if (anchor.textContent) {
+                li.append(anchor);
+            }
+        }
         if (typeof step.highlight === "string") {
             const span = document.createElement("span");
             span.textContent = step.highlight;
@@ -103,6 +116,15 @@ const renderHomepage = (strings) => {
     input.type = "text";
     input.placeholder = strings.settings?.defaultBangPlaceholder || "ddg";
     input.value = getDefaultBangValue();
+    input.addEventListener("input", () => {
+        const value = input.value.trim();
+        if (!value) {
+            localStorage.removeItem("defaultBang");
+            return;
+        }
+        const normalized = value.startsWith("!") ? value : `!${value}`;
+        localStorage.setItem("defaultBang", normalized);
+    });
     body.append(input);
 };
 
@@ -117,46 +139,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             localStorage.setItem(LANG_STORAGE_KEY, DEFAULT_LANG);
             strings = await loadStrings(DEFAULT_LANG);
         } else {
-            strings = {
-                title: "Search Thru!",
-                installation: {
-                    heading: "installation instructions",
-                    firefoxDesktop: {
-                        steps: [
-                            {
-                                text: "right click on URL, select ",
-                                highlight: "Add “Thru!”",
-                            },
-                            "about:settings#search, set as default search engine",
-                        ],
-                    },
-                    chromeMobile: {
-                        steps: [
-                            "chrome://settings/searchEngines — add new search engine",
-                            {
-                                text: "Name: Thru!, Key: thru, Link: ",
-                                highlight: "https://searchth.ru/?q=%s",
-                            },
-                            "Three dots › Set as default",
-                        ],
-                    },
-                    firefoxMobile: {
-                        steps: [
-                            "about:settings#search — add new search engine",
-                            {
-                                text: "Name: Thru!, Key: thru, Link: ",
-                                highlight: "https://searchth.ru/?q=%s",
-                            },
-                            "Three dots › Set as default",
-                        ],
-                    },
-                },
-                settings: {
-                    heading: "settings",
-                    defaultBangLabel: "default engine bang",
-                    defaultBangPlaceholder: "ddg",
-                },
-            };
+            console.error(error);
+            strings = {};
         }
     }
 
