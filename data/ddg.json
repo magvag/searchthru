@@ -14937,10 +14937,10 @@
     "u": "https://www.gry-online.pl/gry/{{{s}}}/"
   },
   "gs": {
-    "u": "http://www.google.com/products?q={{{s}}}&sa=N&tab=pf"
+    "u": "https://www.google.com/search?udm=28&q={{{s}}}"
   },
   "gs.es": {
-    "u": "https://www.google.es/search?tbm=shop&q={{{s}}}"
+    "u": "https://www.google.es/search?udm=28&q={{{s}}}"
   },
   "gsa": {
     "u": "https://www.gsaadvantage.gov/advantage/s/search.do?q=0:0{{{s}}}&db=0&searchType=1"
@@ -14949,10 +14949,10 @@
     "u": "https://www.google.com/search?hl=all&safe=on&pws=0&q={{{s}}}"
   },
   "gsau": {
-    "u": "https://www.google.com.au/search?biw=1920&bih=947&tbm=shop&q={{{s}}}"
+    "u": "https://www.google.com.au/search?udm=28&q={{{s}}}"
   },
   "gsbr": {
-    "u": "http://www.google.com.br/search?q={{{s}}}&hl=pt-BR&safe=off&biw=1108&bih=651&prmd=imvns&source=univ&tbm=shop&tbo=u&sa=X&ei=ZculTqjGLcvAgQf5n_CxBQ&ved=0CJkBEK0E"
+    "u": "https://www.google.com.br/search?udm=28&q={{{s}}}"
   },
   "gsc": {
     "u": "http://scholar.google.com/scholar?q={{{s}}}&btnG=Search&as_sdt=800000000001&as_sdtp=on"
@@ -14982,13 +14982,13 @@
     "u": "https://docs.google.com/spreadsheets/u/0/?q={{{s}}}"
   },
   "gshopping": {
-    "u": "https://www.google.com/products?q={{{s}}}&sa=N&tab=pf"
+    "u": "https://www.google.com/search?udm=28&q={{{s}}}"
   },
   "gsi": {
     "u": "https://www.google.si/search?q={{{s}}}"
   },
   "gsit": {
-    "u": "https://www.google.it/search?hl=it&tbm=shop&q={{{s}}}"
+    "u": "https://www.google.it/search?udm=28&q={{{s}}}"
   },
   "gsk": {
     "u": "http://www.google.sk/search?source=hp&q={{{s}}}&meta=&aq=f&aqi=g10&aql=&oq=&gs_rfai="
@@ -15036,13 +15036,13 @@
     "u": "https://store.google.com/search?q={{{s}}}"
   },
   "gsuk": {
-    "u": "http://www.google.co.uk/search?q={{{s}}}&tbm=shop"
+    "u": "https://www.google.co.uk/search?udm=28&q={{{s}}}"
   },
   "gsupport": {
     "u": "https://support.google.com/search?q={{{s}}}"
   },
   "gsus": {
-    "u": "https://www.google.com/search?tbm=shop&q={{{s}}}&gws_rd=cr"
+    "u": "https://www.google.com/search?udm=28&q={{{s}}}"
   },
   "gsv": {
     "u": "https://google.com/search?hl=sv&q={{{s}}}"
@@ -31440,7 +31440,7 @@
     "u": "http://www.shopomo.com/search?q={{{s}}} "
   },
   "shopping": {
-    "u": "https://www.google.com/products?q={{{s}}}&sa=N&tab=pf"
+    "u": "https://www.google.com/search?udm=28&q={{{s}}}"
   },
   "shopto": {
     "u": "https://www.shopto.net/search/newSearchPage?Filter_department=&newsearch={{{s}}}"
