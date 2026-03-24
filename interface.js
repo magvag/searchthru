@@ -1,6 +1,12 @@
 const DEFAULT_LANG = "en";
 const LANG_STORAGE_KEY = "lang";
 
+const DB_NAME = "bangDB";
+const DB_SCHEMA = 5;
+const BANG_STORE_NAME = "bangData";
+const CACHE_STORE_NAME = "bangCache";
+const DEFAULT_BANG_CACHE_KEY = "_default";
+
 const getStoredLang = () => {
     const stored = localStorage.getItem(LANG_STORAGE_KEY);
     if (stored && stored.trim()) {
@@ -36,6 +42,67 @@ const getInstructionKey = () => {
 const getDefaultBangValue = () => {
     const raw = localStorage.getItem("defaultBang") || "";
     return raw.replace(/^!+/, "");
+};
+
+const openDB = () =>
+    new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, DB_SCHEMA);
+
+        request.onupgradeneeded = (e) => {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains(BANG_STORE_NAME)) {
+                db.createObjectStore(BANG_STORE_NAME, { keyPath: "key" });
+            }
+            if (!db.objectStoreNames.contains(CACHE_STORE_NAME)) {
+                db.createObjectStore(CACHE_STORE_NAME, { keyPath: "key" });
+            }
+        };
+
+        request.onerror = () => reject(request.error);
+        request.onsuccess = (e) => resolve(e.target.result);
+    });
+
+const getBangRulesByKey = async (key) => {
+    const db = await openDB();
+    return new Promise((resolve) => {
+        const tx = db.transaction(BANG_STORE_NAME, "readonly");
+        const store = tx.objectStore(BANG_STORE_NAME);
+        const req = store.get(key);
+
+        req.onsuccess = () => {
+            db.close();
+            resolve(req.result?.value || null);
+        };
+        req.onerror = () => {
+            db.close();
+            resolve(null);
+        };
+    });
+};
+
+const setDefaultBangCache = async (key) => {
+    const bangRules = await getBangRulesByKey(key);
+    const db = await openDB();
+    const tx = db.transaction(CACHE_STORE_NAME, "readwrite");
+    const store = tx.objectStore(CACHE_STORE_NAME);
+
+    if (bangRules) {
+        store.put({ key: DEFAULT_BANG_CACHE_KEY, value: bangRules });
+    } else {
+        store.delete(DEFAULT_BANG_CACHE_KEY);
+    }
+
+    tx.oncomplete = () => db.close();
+    tx.onerror = () => db.close();
+};
+
+const clearDefaultBangCache = async () => {
+    const db = await openDB();
+    const tx = db.transaction(CACHE_STORE_NAME, "readwrite");
+    const store = tx.objectStore(CACHE_STORE_NAME);
+    store.delete(DEFAULT_BANG_CACHE_KEY);
+    tx.oncomplete = () => db.close();
+    tx.onerror = () => db.close();
 };
 
 const appendStep = (li, step) => {
@@ -116,14 +183,24 @@ const renderHomepage = (strings) => {
     input.type = "text";
     input.placeholder = strings.settings?.defaultBangPlaceholder || "ddg";
     input.value = getDefaultBangValue();
-    input.addEventListener("input", () => {
+    input.addEventListener("input", async () => {
         const value = input.value.trim();
         if (!value) {
             localStorage.removeItem("defaultBang");
+            await clearDefaultBangCache();
             return;
         }
-        const normalized = value.startsWith("!") ? value : `${value}`;
+        const normalized = value.replace(/^!+/, "").trim();
+        if (!normalized) {
+            localStorage.removeItem("defaultBang");
+            await clearDefaultBangCache();
+            return;
+        }
+        if (value.startsWith("!")) {
+            input.value = normalized;
+        }
         localStorage.setItem("defaultBang", normalized);
+        await setDefaultBangCache(normalized.toLowerCase());
     });
     body.append(input);
 };
@@ -146,6 +223,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     renderHomepage(strings);
     document.documentElement.style.visibility = "visible";
+
+    const defaultBangValue = getDefaultBangValue();
+    if (defaultBangValue) {
+        setDefaultBangCache(defaultBangValue.toLowerCase());
+    } else {
+        clearDefaultBangCache();
+    }
 
     const url = new URL(window.location.href);
     const query = url.searchParams.get("q")?.trim() ?? "";
