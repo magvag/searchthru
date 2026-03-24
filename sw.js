@@ -76,9 +76,7 @@ const getBangRulesFromDB = (db, bang) =>
     });
 
 async function getBang(db, query) {
-    const foundBangs = [...query.matchAll(/(?:^|\s)(![^\s!]+)/g)].map(
-        (match) => match[1],
-    );
+    const foundBangs = query.match(/![^!\s]+/g) ?? [];
     let searchQuery = query;
 
     // fallback for incognito, while service workers starts loading DB
