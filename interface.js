@@ -1,12 +1,6 @@
 const DEFAULT_LANG = "en";
 const LANG_STORAGE_KEY = "lang";
 
-const DB_NAME = "bangDB";
-const DB_SCHEMA = 5;
-const BANG_STORE_NAME = "bangData";
-const CACHE_STORE_NAME = "bangCache";
-const DEFAULT_BANG_CACHE_KEY = "_default";
-
 const getStoredLang = () => {
     const stored = localStorage.getItem(LANG_STORAGE_KEY);
     if (stored && stored.trim()) {
@@ -87,9 +81,9 @@ const setDefaultBangCache = async (key) => {
     const store = tx.objectStore(CACHE_STORE_NAME);
 
     if (bangRules) {
-        store.put({ key: DEFAULT_BANG_CACHE_KEY, value: bangRules });
+        store.put({ key: DEFAULT_BANG, value: bangRules });
     } else {
-        store.delete(DEFAULT_BANG_CACHE_KEY);
+        store.delete(DEFAULT_BANG);
     }
 
     tx.oncomplete = () => db.close();
@@ -100,7 +94,7 @@ const clearDefaultBangCache = async () => {
     const db = await openDB();
     const tx = db.transaction(CACHE_STORE_NAME, "readwrite");
     const store = tx.objectStore(CACHE_STORE_NAME);
-    store.delete(DEFAULT_BANG_CACHE_KEY);
+    store.delete(DEFAULT_BANG);
     tx.oncomplete = () => db.close();
     tx.onerror = () => db.close();
 };
