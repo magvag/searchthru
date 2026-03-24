@@ -103,8 +103,14 @@ async function getBang(db, query) {
         }
     }
 
+    let defaultBangRules;
+
+    // if SW is alive, defaultBangRules is cached already (null or value)
+    if (defaultBangRules === undefined) {
+        defaultBangRules = await getBangRulesFromDB(db, DEFAULT_BANG);
+    }
+
     // no bangs in query / only invalid bangs
-    const defaultBangRules = await getBangRulesFromDB(db, DEFAULT_BANG);
     if (defaultBangRules) {
         return {
             searchQuery,
