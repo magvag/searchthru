@@ -1,5 +1,6 @@
 const DEFAULT_LANG = "en";
 const LANG_STORAGE_KEY = "lang";
+const DEFAULT_BANG = "_default";
 
 const getStoredLang = () => {
     const stored = localStorage.getItem(LANG_STORAGE_KEY);
