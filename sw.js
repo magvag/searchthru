@@ -76,22 +76,25 @@ const getBangRulesFromDB = (db, bang) =>
     });
 
 async function getBang(db, query) {
-    const foundBangKeys = query.match(/![^!\s]+/g) ?? [];
+    const foundBangs = [...query.matchAll(/(?:^|\s)(![^\s!]+)/g)].map(
+        (match) => match[1],
+    );
     let searchQuery = query;
 
+    // fallback for incognito, while service workers starts loading DB
     if (!indexedDB.databases) {
         return { searchQuery, bang: "ddg", bang_rules: FALLBACK_BANG_RULES };
     }
 
-    const defaultBangRules = await getBangRulesFromDB(db, DEFAULT_BANG);
-
-    if (foundBangKeys.length === 0 && !defaultBangRules) {
-        return { searchQuery, bang: "ddg", bang_rules: FALLBACK_BANG_RULES };
-    }
+    const seen = new Set(); // to account for duplicated invalid bangs
 
     // order is important "query !g !gh" should redirect to Google
-    for (let i = 0; i < foundBangKeys.length; i++) {
-        const key = foundBangKeys[i].slice(1).toLowerCase();
+    for (let i = 0; i < foundBangs.length; i++) {
+        const key = foundBangs[i].slice(1).toLowerCase();
+
+        if (seen.has(key)) continue; // saves 10ms per DB transaction
+        seen.add(key);
+
         const bang_rules = await getBangRulesFromDB(db, key);
 
         if (bang_rules) {
@@ -102,7 +105,8 @@ async function getBang(db, query) {
         }
     }
 
-    // no bang_rules in query → use default one
+    // no bangs in query / only invalid bangs
+    const defaultBangRules = await getBangRulesFromDB(db, DEFAULT_BANG);
     if (defaultBangRules) {
         return {
             searchQuery,
@@ -145,7 +149,7 @@ async function getRedirectURL(searchQuery, bang, bang_rules, db) {
 
         if (allowsBaseOpen) {
             if (bang_rules.ad) return "https://" + bang_rules.ad; // .ad is an alternative domain to redirect
-            if (siteOperator) return siteOperator; // "!doj" → justice.gov
+            if (siteOperator) return siteOperator; // last resort
 
             try {
                 return new URL(bang_rules.u.replace("{{{s}}}", "")).origin;
