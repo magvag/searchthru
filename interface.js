@@ -2,6 +2,12 @@ const DEFAULT_LANG = "en";
 const LANG_STORAGE_KEY = "lang";
 const DEFAULT_BANG = "_default";
 
+const DB_NAME = "bangDB";
+const DB_SCHEMA = 5;
+const BANG_STORE_NAME = "bangData";
+const CACHE_STORE_NAME = "bangCache";
+const BANG_JSON_PATH = "/data/kagi.json";
+
 const getStoredLang = () => {
     const stored = localStorage.getItem(LANG_STORAGE_KEY);
     if (stored && stored.trim()) {
