@@ -236,8 +236,28 @@ document.addEventListener("DOMContentLoaded", async () => {
     const query = url.searchParams.get("q")?.trim() ?? "";
 
     if (!query) {
+        let dbEmpty = true;
+        let db;
+        try {
+            db = await openDB();
+            const tx = db.transaction(BANG_STORE_NAME, "readonly");
+            const store = tx.objectStore(BANG_STORE_NAME);
+            const count = await new Promise((resolve) => {
+                const req = store.count();
+                req.onsuccess = () => resolve(req.result || 0);
+                req.onerror = () => resolve(0);
+            });
+            dbEmpty = count === 0;
+        } catch {
+            dbEmpty = true;
+        } finally {
+            db?.close();
+        }
+
         navigator.serviceWorker.ready.then((reg) => {
-            reg.active?.postMessage({ type: "UPDATE_DB" });
+            reg.active?.postMessage({
+                type: dbEmpty ? "LOAD_DB" : "UPDATE_DB",
+            });
         });
     }
 });

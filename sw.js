@@ -224,46 +224,23 @@ async function loadBangs() {
     const data = await response.json();
 
     try {
-        return new Promise((resolve, reject) => {
-            const request = indexedDB.open(DB_NAME, DB_SCHEMA);
+        const db = await openDB();
+        const transaction = db.transaction(BANG_STORE_NAME, "readwrite");
+        const store = transaction.objectStore(BANG_STORE_NAME);
 
-            request.onerror = () => reject(request.error);
-
-            request.onupgradeneeded = (e) => {
-                const db = e.target.result;
-                if (!db.objectStoreNames.contains(BANG_STORE_NAME)) {
-                    db.createObjectStore(BANG_STORE_NAME, { keyPath: "key" });
-                }
-
-                if (!db.objectStoreNames.contains(CACHE_STORE_NAME)) {
-                    db.createObjectStore(CACHE_STORE_NAME, { keyPath: "key" });
-                }
-            };
-
-            request.onsuccess = (e) => {
-                const db = e.target.result;
-
-                const transaction = db.transaction(
-                    BANG_STORE_NAME,
-                    "readwrite",
-                );
-                const store = transaction.objectStore(BANG_STORE_NAME);
-
-                Object.entries(data).forEach(([key, value]) => {
-                    store.put({ key, value });
-                });
-
-                transaction.oncomplete = () => {
-                    console.log(
-                        `Loaded ${Object.keys(data).length} bangs into IndexedDB successfully.`,
-                    );
-                    db.close();
-                    resolve();
-                };
-
-                transaction.onerror = () => reject(transaction.error);
-            };
+        Object.entries(data).forEach(([key, value]) => {
+            store.put({ key, value });
         });
+
+        await new Promise((resolve, reject) => {
+            transaction.oncomplete = () => resolve();
+            transaction.onerror = () => reject(transaction.error);
+        });
+
+        console.log(
+            `Loaded ${Object.keys(data).length} bangs into IndexedDB successfully.`,
+        );
+        db.close();
     } catch (error) {
         console.error("Error loading bangs into DB", error);
     }
@@ -348,7 +325,8 @@ self.addEventListener("fetch", (event) => {
 });
 
 self.addEventListener("message", async (e) => {
-    if (e.data?.type !== "UPDATE_DB") return;
+    const messageType = e.data?.type;
+    if (messageType !== "UPDATE_DB" && messageType !== "LOAD_DB") return;
 
     const cache = await caches.open(VERSION);
     const cached = await cache.match(BANG_JSON_PATH);
@@ -364,29 +342,15 @@ self.addEventListener("message", async (e) => {
         }
     }
 
-    let dbEmpty = false;
-    let db;
-    try {
-        db = await openDB();
-        const tx = db.transaction(BANG_STORE_NAME, "readonly");
-        const store = tx.objectStore(BANG_STORE_NAME);
-        const count = await new Promise((resolve) => {
-            const req = store.count();
-            req.onsuccess = () => resolve(req.result || 0);
-            req.onerror = () => resolve(0);
-        });
-        dbEmpty = count === 0;
-    } catch {
-        dbEmpty = true;
-    } finally {
-        db?.close();
+    if (messageType === "LOAD_DB") {
+        await loadBangs();
+        e.source?.postMessage({ type: "UPDATED" });
+        return;
     }
 
-    if (expired || dbEmpty) {
-        if (expired) {
-            const res = await fetch(BANG_JSON_PATH);
-            await cache.put(BANG_JSON_PATH, res);
-        }
+    if (expired) {
+        const res = await fetch(BANG_JSON_PATH);
+        await cache.put(BANG_JSON_PATH, res);
         await loadBangs();
         e.source?.postMessage({ type: "UPDATED" });
         return;
