@@ -370,7 +370,30 @@ self.addEventListener("message", async (e) => {
         await loadBangs();
 
         e.source?.postMessage({ type: "UPDATED" });
-    } else {
-        e.source?.postMessage({ type: "UP_TO_DATE" });
+        return;
     }
+
+    // edgecase of json cached, db not initialized
+    let db;
+    try {
+        db = await openDB();
+        const tx = db.transaction(BANG_STORE_NAME, "readonly");
+        const store = tx.objectStore(BANG_STORE_NAME);
+        const count = await new Promise((resolve) => {
+            const req = store.count();
+            req.onsuccess = () => resolve(req.result || 0);
+            req.onerror = () => resolve(0);
+        });
+
+        if (count === 0) {
+            await loadBangs();
+            e.source?.postMessage({ type: "UPDATED" });
+            return;
+        }
+    } catch {
+    } finally {
+        db?.close();
+    }
+
+    e.source?.postMessage({ type: "UP_TO_DATE" });
 });
