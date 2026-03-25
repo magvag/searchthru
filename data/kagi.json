@@ -39952,7 +39952,7 @@
     "u": "https://www.y8.com/search?utf8=%E2%9C%93&kind=game&q={{{s}}}"
   },
   "ya": {
-    "u": "https://yandex.ru/search?text={{{s}}}"
+    "u": "https://ya.ru/search?text={{{s}}}"
   },
   "yabla": {
     "u": "https://chinese.yabla.com/chinese-english-pinyin-dictionary.php?define={{{s}}}"
@@ -39973,13 +39973,23 @@
     "u": "https://au.finance.yahoo.com/quote/{{{s}}}"
   },
   "yai": {
-    "u": "https://yandex.ru/images/search?text={{{s}}}"
+    "u": "https://ya.ru/images/search?text={{{s}}}",
+    "fmt": [
+      "url_encode_placeholder",
+      "open_snap_domain",
+      "url_encode_space_to_plus"
+    ]
   },
   "yajp": {
     "u": "https://auctions.search.yahoo.co.jp/search?p={{{s}}}"
   },
   "yak": {
-    "u": "https://yandex.ru/images/search?text={{{s}}}"
+    "u": "https://yandex.ru/images/search?text={{{s}}}",
+    "fmt": [
+      "url_encode_placeholder",
+      "open_snap_domain",
+      "url_encode_space_to_plus"
+    ]
   },
   "yam": {
     "u": "https://www.yammer.com/search?search={{{s}}}"
@@ -39988,7 +39998,12 @@
     "u": "https://market.yandex.ru/search?text={{{s}}}"
   },
   "yamaps": {
-    "u": "https://yandex.ru/maps/?text={{{s}}}"
+    "u": "https://ya.ru/maps/?text={{{s}}}",
+    "fmt": [
+      "url_encode_placeholder",
+      "open_snap_domain",
+      "url_encode_space_to_plus"
+    ]
   },
   "yamgo": {
     "u": "https://yamgo.com/search?q={{{s}}}"
@@ -40003,7 +40018,7 @@
     "u": "https://yandex.com/search?text={{{s}}}"
   },
   "yandex": {
-    "u": "https://yandex.ru/search?text={{{s}}}"
+    "u": "https://ya.ru/search?text={{{s}}}"
   },
   "yandexen": {
     "u": "https://yandex.com/search?text={{{s}}}"
@@ -40012,7 +40027,12 @@
     "u": "https://market.yandex.ru/search?text={{{s}}}"
   },
   "yandexmaps": {
-    "u": "https://yandex.ru/maps/?text={{{s}}}"
+    "u": "https://ya.ru/maps/?text={{{s}}}",
+    "fmt": [
+      "url_encode_placeholder",
+      "open_snap_domain",
+      "url_encode_space_to_plus"
+    ]
   },
   "yanswers": {
     "u": "https://answers.yahoo.com/search/search_result;_ylt=AnPnri0ekBBFsWt64sNbHmvj1KIX;_ylv=3?p={{{s}}}&submit-go=Search+Y!+Answers"
@@ -40785,13 +40805,23 @@
     "u": "https://ru.wikipedia.org/w/index.php?search={{{s}}}"
   },
   "я": {
-    "u": "https://yandex.ru/search?text={{{s}}}"
+    "u": "https://ya.ru/search?text={{{s}}}"
   },
   "як": {
-    "u": "https://yandex.ru/images/search?text={{{s}}}"
+    "u": "https://ya.ru/images/search?text={{{s}}}",
+    "fmt": [
+      "url_encode_placeholder",
+      "open_snap_domain",
+      "url_encode_space_to_plus"
+    ]
   },
   "якарты": {
-    "u": "https://yandex.ru/maps/?text={{{s}}}"
+    "u": "https://ya.ru/maps/?text={{{s}}}",
+    "fmt": [
+      "url_encode_placeholder",
+      "open_snap_domain",
+      "url_encode_space_to_plus"
+    ]
   },
   "яму": {
     "u": "https://music.yandex.ru/search?text={{{s}}}"
