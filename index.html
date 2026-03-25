@@ -6,7 +6,8 @@
                 color-scheme: light dark;
                 --primary: light-dark(#fff, #111);
                 background-color: var(--primary);
-
+                /* hidden because first incognito query */
+                /* will render page before redirecting  */
                 visibility: hidden;
             }
         </style>
@@ -17,7 +18,20 @@
             media="print"
         />
 
-        <!--<script id="router" src="/router.js" async></script>-->
+        <script>
+            // first incognito search query will load this page
+            // since there is no service worker to intercept
+            const url = new URL(window.location.href);
+            const query = url.searchParams.get("q")?.trim() ?? "";
+            if (query && !navigator.serviceWorker?.controller) {
+                const fallback = `https://duckduckgo.com/?q=${encodeURIComponent(
+                    query,
+                )}`;
+                window.location.replace(fallback);
+                return;
+            }
+        </script>
+
         <script src="/interface.js" defer></script>
         <script defer>
             if ("serviceWorker" in navigator) {
