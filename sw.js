@@ -364,16 +364,7 @@ self.addEventListener("message", async (e) => {
         }
     }
 
-    if (expired) {
-        const res = await fetch(BANG_JSON_PATH);
-        await cache.put(BANG_JSON_PATH, res);
-        await loadBangs();
-
-        e.source?.postMessage({ type: "UPDATED" });
-        return;
-    }
-
-    // edgecase of json cached, db not initialized
+    let dbEmpty = false;
     let db;
     try {
         db = await openDB();
@@ -384,15 +375,21 @@ self.addEventListener("message", async (e) => {
             req.onsuccess = () => resolve(req.result || 0);
             req.onerror = () => resolve(0);
         });
-
-        if (count === 0) {
-            await loadBangs();
-            e.source?.postMessage({ type: "UPDATED" });
-            return;
-        }
+        dbEmpty = count === 0;
     } catch {
+        dbEmpty = true;
     } finally {
         db?.close();
+    }
+
+    if (expired || dbEmpty) {
+        if (expired) {
+            const res = await fetch(BANG_JSON_PATH);
+            await cache.put(BANG_JSON_PATH, res);
+        }
+        await loadBangs();
+        e.source?.postMessage({ type: "UPDATED" });
+        return;
     }
 
     e.source?.postMessage({ type: "UP_TO_DATE" });
