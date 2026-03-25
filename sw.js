@@ -100,7 +100,8 @@ async function getBang(db, query) {
 
     // order is important "query !g !gh" should redirect to Google
     for (let i = 0; i < foundBangs.length; i++) {
-        const key = foundBangs[i].slice(1).toLowerCase();
+        const foundBang = foundBangs[i].slice(1);
+        const key = foundBang.toLowerCase();
 
         if (seen.has(key)) continue; // saves 10ms per DB transaction
         seen.add(key);
@@ -109,7 +110,7 @@ async function getBang(db, query) {
 
         if (bangRules) {
             searchQuery = searchQuery
-                .replace(new RegExp(`!${key}(?=\\s|$)`), "")
+                .replace(new RegExp(`!${foundBang}(?=\\s|$)`), "")
                 .trim();
             return { searchQuery, bang: key, bangRules };
         }
