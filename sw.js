@@ -343,8 +343,28 @@ self.addEventListener("message", async (e) => {
     }
 
     if (messageType === "LOAD_DB") {
-        await loadBangs();
-        e.source?.postMessage({ type: "UPDATED" });
+        let db;
+        try {
+            db = await openDB();
+            const tx = db.transaction(BANG_STORE_NAME, "readonly");
+            const store = tx.objectStore(BANG_STORE_NAME);
+            const count = await new Promise((resolve) => {
+                const req = store.count();
+                req.onsuccess = () => resolve(req.result || 0);
+                req.onerror = () => resolve(0);
+            });
+
+            if (count === 0) {
+                await loadBangs();
+                e.source?.postMessage({ type: "UPDATED" });
+                return;
+            }
+        } catch {
+        } finally {
+            db?.close();
+        }
+
+        e.source?.postMessage({ type: "UP_TO_DATE" });
         return;
     }
 
