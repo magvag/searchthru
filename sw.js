@@ -60,20 +60,32 @@ const getBangRulesFromDB = (db, bang) =>
             const req = store.get(bang);
 
             req.onsuccess = () => {
-                const bang_rules = req.result?.value;
-                if (bang_rules) {
+                const bangRules = req.result?.value;
+                if (bangRules) {
                     const cacheTx = db.transaction(
                         CACHE_STORE_NAME,
                         "readwrite",
                     );
                     const cacheStore = cacheTx.objectStore(CACHE_STORE_NAME);
-                    cacheStore.put({ key: bang, value: bang_rules });
+                    cacheStore.put({ key: bang, value: bangRules });
                 }
-                resolve(bang_rules || null);
+                resolve(bangRules || null);
             };
             req.onerror = () => resolve(null);
         }
     });
+
+async function getDefaultBang(db, searchQuery) {
+    const bangRules = await getBangRulesFromDB(db, DEFAULT_BANG);
+    if (bangRules) {
+        return { searchQuery, bang: DEFAULT_BANG, bangRules };
+    }
+    return {
+        searchQuery,
+        bang: "ddg",
+        bangRules: FALLBACK_BANG_RULES,
+    };
+}
 
 async function getBang(db, query) {
     const foundBangs = query.match(/![^!\s]+/g) ?? [];
@@ -81,7 +93,7 @@ async function getBang(db, query) {
 
     // fallback for incognito, while service workers starts loading DB
     if (!indexedDB.databases) {
-        return { searchQuery, bang: "ddg", bang_rules: FALLBACK_BANG_RULES };
+        return { searchQuery, bang: "ddg", bangRules: FALLBACK_BANG_RULES };
     }
 
     const seen = new Set(); // to account for duplicated invalid bangs
@@ -93,56 +105,35 @@ async function getBang(db, query) {
         if (seen.has(key)) continue; // saves 10ms per DB transaction
         seen.add(key);
 
-        const bang_rules = await getBangRulesFromDB(db, key);
+        const bangRules = await getBangRulesFromDB(db, key);
 
-        if (bang_rules) {
+        if (bangRules) {
             searchQuery = searchQuery
                 .replace(new RegExp(`!${key}(?=\\s|$)`), "")
                 .trim();
-            return { searchQuery, bang: key, bang_rules };
+            return { searchQuery, bang: key, bangRules };
         }
     }
 
-    let defaultBangRules;
-
-    // if SW is alive, defaultBangRules is cached already (null or value)
-    if (defaultBangRules === undefined) {
-        defaultBangRules = await getBangRulesFromDB(db, DEFAULT_BANG);
-    }
-
-    // no bangs in query / only invalid bangs
-    if (defaultBangRules) {
-        return {
-            searchQuery,
-            bang: DEFAULT_BANG,
-            bang_rules: defaultBangRules,
-        };
-    }
-
-    return {
-        searchQuery,
-        bang: "ddg",
-        bang_rules: FALLBACK_BANG_RULES, // just in case something breaks, go go duckduckgo
-    };
+    return getDefaultBang(db, searchQuery);
 }
 
-async function getRedirectURL(searchQuery, bang, bang_rules, db) {
-    if (!bang_rules) return null;
+function parseSearchOperators(template) {
+    const hasSearchOperator = template.startsWith("{{{s}}}");
+    const siteMatch = template.match(/\+site:\(?https?:\/\/([^)+]+)\)?/);
+    const siteOperator = siteMatch ? `https://${siteMatch[1]}` : null;
 
-    // search operators like "{{{s}}}+site:justice.gov" or "+filetype:pdf"
-    let hasSearchOperator = false;
-    let siteOperator = null; // site operator URL
+    return { hasSearchOperator, siteOperator };
+}
 
-    if (bang_rules.u.startsWith("{{{s}}}")) {
-        hasSearchOperator = true;
-    }
+async function getRedirectURL(searchQuery, bang, bangRules, db) {
+    if (!bangRules) return null;
 
-    const siteMatch = bang_rules.u.match(/\+site:\(?https?:\/\/([^)+]+)\)?/);
-    if (siteMatch) {
-        siteOperator = `https://${siteMatch[1]}`;
-    }
+    const { hasSearchOperator, siteOperator } = parseSearchOperators(
+        bangRules.u,
+    );
 
-    let fmt = bang_rules.fmt ?? [];
+    let fmt = bangRules.fmt ?? [];
 
     // with empty query, open homepage or search page
     if (!searchQuery) {
@@ -152,36 +143,35 @@ async function getRedirectURL(searchQuery, bang, bang_rules, db) {
             fmt.includes("open_snap_domain");
 
         if (allowsBaseOpen) {
-            if (bang_rules.ad) return "https://" + bang_rules.ad; // .ad is an alternative domain to redirect
-            if (siteOperator) return siteOperator; // last resort
+            const baseUrl = bangRules.ad
+                ? "https://" + bangRules.ad // alternative domain
+                : siteOperator; // or domain parsed from +site:***
 
+            if (baseUrl) return baseUrl;
+
+            // otherwise try to open homepage
+            const stripped = bangRules.u.replace("{{{s}}}", "");
             try {
-                return new URL(bang_rules.u.replace("{{{s}}}", "")).origin;
-            } catch {
-                // case of "!pdf", just do "+filetype:pdf" searchQuery in selected search engine
-            }
+                return new URL(stripped).origin;
+            } catch {}
         }
 
-        return bang_rules.u.replace("{{{s}}}+", ""); // search page
+        // "{{{s}}}+filetype:pdf" → "+filetype:pdf"
+        return bangRules.u.replace("{{{s}}}", "");
     }
 
-    // "query !pdf" → searchengine.com/?q=query+filetype:pdf
-    let defaultBang = null;
+    // "query !pdf" → "searchengine.com/?q=query+filetype:pdf"
+    let defaultBangRules = null;
     if (hasSearchOperator) {
-        searchQuery = bang_rules.u.replace("{{{s}}}", searchQuery);
-        try {
-            defaultBang =
-                (await getBangRulesFromDB(db, DEFAULT_BANG)) ||
-                FALLBACK_BANG_RULES;
-        } catch {
-            defaultBang = FALLBACK_BANG_RULES;
-        }
-        fmt = defaultBang.fmt ?? [];
+        searchQuery = bangRules.u.replace("{{{s}}}", searchQuery);
+        const { searchQuery, defaultBang, defaultBangRules } =
+            await getDefaultBang(db, searchQuery);
+        fmt = defaultBangRules.fmt ?? [];
     }
 
     let encodedQuery = encodeQuery(searchQuery, fmt);
 
-    const template = defaultBang?.u ?? bang_rules.u;
+    const template = defaultBangRules?.u ?? bangRules.u;
     return template.replace("{{{s}}}", encodedQuery);
 }
 
@@ -295,14 +285,14 @@ self.addEventListener("fetch", (event) => {
                     let db;
                     try {
                         db = await openDB();
-                        const { searchQuery, bang, bang_rules } = await getBang(
+                        const { searchQuery, bang, bangRules } = await getBang(
                             db,
                             query,
                         );
                         const redirectUrl = await getRedirectURL(
                             searchQuery,
                             bang,
-                            bang_rules,
+                            bangRules,
                             db,
                         );
                         if (redirectUrl) {
