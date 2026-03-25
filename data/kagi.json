@@ -39976,7 +39976,6 @@
     "u": "https://ya.ru/images/search?text={{{s}}}",
     "fmt": [
       "url_encode_placeholder",
-      "open_snap_domain",
       "url_encode_space_to_plus"
     ]
   },
@@ -39987,7 +39986,6 @@
     "u": "https://yandex.ru/images/search?text={{{s}}}",
     "fmt": [
       "url_encode_placeholder",
-      "open_snap_domain",
       "url_encode_space_to_plus"
     ]
   },
@@ -40001,7 +39999,6 @@
     "u": "https://ya.ru/maps/?text={{{s}}}",
     "fmt": [
       "url_encode_placeholder",
-      "open_snap_domain",
       "url_encode_space_to_plus"
     ]
   },
@@ -40030,7 +40027,6 @@
     "u": "https://ya.ru/maps/?text={{{s}}}",
     "fmt": [
       "url_encode_placeholder",
-      "open_snap_domain",
       "url_encode_space_to_plus"
     ]
   },
@@ -40811,7 +40807,6 @@
     "u": "https://ya.ru/images/search?text={{{s}}}",
     "fmt": [
       "url_encode_placeholder",
-      "open_snap_domain",
       "url_encode_space_to_plus"
     ]
   },
@@ -40819,7 +40814,6 @@
     "u": "https://ya.ru/maps/?text={{{s}}}",
     "fmt": [
       "url_encode_placeholder",
-      "open_snap_domain",
       "url_encode_space_to_plus"
     ]
   },
