@@ -1,4 +1,4 @@
-const VERSION = "v1.20";
+const VERSION = "v1.21";
 
 const DB_NAME = "bangDB";
 const DB_SCHEMA = 5;
@@ -245,8 +245,10 @@ self.addEventListener("install", (event) => {
             await cache.addAll([
                 "/",
                 "/index.html",
-                // "/global.css",
+                "/global.css",
                 "/interface.js",
+                "/ui/en.json",
+                "/ui/ru.json",
                 "/assets/favicon.png",
                 "/assets/favicon.svg",
             ]);
