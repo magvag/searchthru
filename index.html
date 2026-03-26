@@ -8,13 +8,13 @@
                 background-color: var(--primary);
                 /* hidden because first incognito query */
                 /* will render page before redirecting  */
-                visibility: hidden;
+                /*visibility: hidden;*/
             }
         </style>
         <link
             id="homepageStylesheet"
             rel="stylesheet"
-            href="/global.css"
+            href="./global.css"
             media="print"
         />
 
@@ -59,6 +59,174 @@
         />
     </head>
     <body>
-        <div id="app"></div>
+        <h1 id="title" data-i18n="title">Search Thru!</h1>
+        <p id="tagline" data-i18n="tagline">A local search engine router</p>
+        <p data-i18n="description">
+            <span data-i18n="description.lead">
+                Use DuckDuckGo/Kagi !bangs to search directly on any of 10 000+
+                supported websites. For example,
+            </span>
+            <q data-i18n="description.examples.1.query">caesar !w</q>
+            <span data-i18n="description.examples.1.description">
+                opens Julius Caesar's Wiki page,
+            </span>
+            <q data-i18n="description.examples.2.query">!pin bauhaus</q>
+            <span data-i18n="description.examples.2.description">
+                leads to 1920’s Pinterest, and
+            </span>
+            <q data-i18n="description.examples.3.query">cute cats !yt</q>
+            <span data-i18n="description.examples.3.description">
+                should speak for itself.
+            </span>
+            <span data-i18n="description.bookmarks.start">
+                Bangs also work as bookmarks for homepages: use
+            </span>
+            <q data-i18n="description.bookmarks.1">!r</q>,
+            <q data-i18n="description.bookmarks.2">!a</q>,
+            <q data-i18n="description.bookmarks.3">!gh</q>,
+            <q data-i18n="description.bookmarks.4">!x</q>
+            <span data-i18n="description.bookmarks.end">
+                to open Reddit, Amazon, Github, and X.
+            </span>
+        </p>
+        <div class="perks">
+            <div class="perk-card">
+                <h2 data-i18n="perks.speed.title">Fast.</h2>
+                <p data-i18n="perks.speed.description">
+                    Thru! redirects your query in ~0.1 second: faster than DDG,
+                    Kagi or
+                    <a
+                        href="https://unduck.link/"
+                        data-i18n="perks.speed.description.link"
+                    >
+                        other local routers.
+                    </a>
+                </p>
+            </div>
+            <div class="perk-card">
+                <h2 data-i18n="perks.privacy.title">Private.</h2>
+                <p data-i18n="perks.privacy.description">
+                    <span data-i18n="perks.privacy.description.start">
+                        Thru! works locally and have no way to store your search
+                        history — check out
+                    </span>
+                    <a
+                        href="https://github.com/magvag/searchthru"
+                        data-i18n="perks.privacy.description.link"
+                    >
+                        the source code
+                    </a>
+                    <span data-i18n="perks.privacy.description.end">
+                        to confirm.
+                    </span>
+                </p>
+            </div>
+            <div class="perk-card">
+                <h2 data-i18n="perks.customization.title">Customizable.</h2>
+                <p data-i18n="perks.customization.description">
+                    You can change the search engine from DuckDuckGo to Google
+                    or anything else. More features are coming.
+                </p>
+            </div>
+        </div>
+        <div class="instructions">
+            <h2 data-i18n="instructions.title">Install</h2>
+            <div class="browser-selector">
+                <a
+                    href="#chrome"
+                    class="interactive select"
+                    data-i18n="instructions.browsers.chrome"
+                    >Chrome</a
+                >
+                <a
+                    href="#firefox"
+                    class="interactive select"
+                    data-i18n="instructions.browsers.firefox"
+                    >Firefox</a
+                >
+                <a
+                    href="#safari"
+                    class="interactive select"
+                    data-i18n="instructions.browsers.safari"
+                    >Safari</a
+                >
+            </div>
+            <div id="chrome">
+                <h3 data-i18n="instructions.chrome.title">
+                    Chrome, Yandex Browser, Opera, etc.
+                </h3>
+                <ol>
+                    <li data-i18n="instructions.chrome.1">
+                        Go to Settings › Search engine › Manage search engines
+                        and site searches
+                    </li>
+                    <li data-i18n="instructions.chrome.2">
+                        Scroll to <q>Site search</q> and click <q>Add</q> button
+                    </li>
+                    <li data-i18n="instructions.chrome.3">
+                        Set <q>Name</q> and <q>Shortcut</q> fields to anything
+                        you want
+                    </li>
+                    <li data-i18n="instructions.chrome.4">
+                        <span data-i18n="instructions.chrome.start">
+                            Set <q>URL...</q> to
+                        </span>
+                        <a
+                            href="https://searchth.ru/?q=%s"
+                            class="interactive copy"
+                            >https://searchth.ru/?q=%s</a
+                        >
+                        <span data-i18n="instructions.chrome.end">
+                            and click <q>Add</q>
+                        </span>
+                    </li>
+                    <li data-i18n="instructions.chrome.5">
+                        Click on three dots <span class="ui">⋮</span> and select
+                        <q>Make default</q>
+                    </li>
+                </ol>
+            </div>
+            <div id="firefox">
+                <h3 data-i18n="instructions.firefox.title">
+                    Firefox, Zen, etc.
+                </h3>
+                <ol>
+                    <li data-i18n="instructions.firefox.1">
+                        Right click on URL in address bar of this page
+                    </li>
+                    <li data-i18n="instructions.firefox.2">
+                        Click <q>Add “Thru!”</q>
+                    </li>
+                    <li data-i18n="instructions.firefox.3">
+                        Go to Setting › Search and choose Thru! as a default
+                        search engine
+                    </li>
+                </ol>
+            </div>
+            <div id="safari">
+                <h3 data-i18n="instructions.safari.title">Safari</h3>
+                <p data-i18n="instructions.safari.1">
+                    Safari does not support custom search engines, stay tuned
+                    for a browser extension.
+                </p>
+            </div>
+        </div>
+        <div class="settings">
+            <h2 data-i18n="settings.title">Settings</h2>
+            <div id="defaults">
+                <label for="defaultBang" data-i18n="settings.default-bang"
+                    >Default engine bang</label
+                >
+                <input
+                    type="text"
+                    id="defaultBang"
+                    name="defaultBang"
+                    placeholder="!ddg"
+                />
+                <p class="hint" data-i18n="settings.default-bang.help">
+                    Use !g for Google, !ya for Yandex and !b for Bing.
+                </p>
+            </div>
+        </div>
     </body>
 </html>
