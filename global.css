@@ -1,3 +1,273 @@
 :root {
-    opacity: 1;
+    --color-primary: light-dark(#ccf0eb, #102b27);
+    --color-secondary: light-dark(#102b27, #ccf0eb);
+    --color-tertiary: light-dark(red, red);
+    /*--color-quaternary: light-dark(red, red);*/
+}
+
+:root {
+    --color-background: var(--color-primary);
+    --color-text: var(--color-secondary);
+    --color-heading: var(--color-text);
+    --color-link: light-dark(#007bff, #007bff);
+    --color-link__hover: light-dark(#0056b3, #0056b3);
+    --color-link__visited: light-dark(#b24bab, #ef4bc6);
+    --color-link__active: light-dark(#e72c2c, #e72c2c);
+    --color-codeBackground: light-dark(
+        white,
+        color-mix(in srgb, var(--color-text), transparent 90%)
+    );
+}
+
+:root {
+    --transparency-line: 80%;
+    --width-main: 50rem;
+    --font-size-text: 1.1rem;
+    --font-size-caption: 0.825rem;
+    --font-size-h1: 3rem;
+    --font-size-h2: 2rem;
+}
+
+:root {
+    background-color: var(--color-background);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        color-scheme: dark;
+    }
+}
+
+* {
+    box-sizing: border-box;
+}
+
+@view-transition {
+    navigation: auto;
+}
+
+html,
+body {
+    padding: 0 auto;
+    margin: 0 auto;
+    font-family: var(--font-family);
+    font-size: var(--font-size-text);
+    color: var(--color-text);
+}
+
+html {
+    overflow-y: scroll;
+    min-height: 100vh;
+}
+
+/* FONTS */
+/* ibm-plex-serif-regular - cyrillic_cyrillic-ext_latin_latin-ext */
+@font-face {
+    font-display: swap;
+    font-family: "IBM Plex Serif";
+    font-style: normal;
+    font-weight: 400;
+    src: url("/assets/fonts/ibm-plex-serif-v20-cyrillic_cyrillic-ext_latin_latin-ext-regular.woff2")
+        format("woff2"); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+
+/* ibm-plex-serif-700 - cyrillic_cyrillic-ext_latin_latin-ext */
+@font-face {
+    font-display: swap;
+    font-family: "IBM Plex Serif";
+    font-style: normal;
+    font-weight: 700;
+    src: url("/assets/fonts/ibm-plex-serif-v20-cyrillic_cyrillic-ext_latin_latin-ext-700.woff2")
+        format("woff2"); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+
+@font-face {
+    font-display: swap;
+    font-family: "Iosevka";
+    font-style: normal;
+    font-weight: 400;
+    src: url("/assets/fonts/IosevkaSS15-Regular.woff2") format("woff2"); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+
+:root {
+    --font-family: "IBM Plex Serif", -apple-system, system-ui, sans-serif;
+    --font-family-monospace:
+        "Iosevka", Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono,
+        Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono,
+        Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New,
+        Courier, monospace;
+}
+
+@media (max-width: 800px) {
+    html,
+    body {
+        margin: 0 2%;
+    }
+}
+
+body,
+main {
+    max-width: var(--width-main);
+}
+
+body {
+    padding-top: 2rem;
+    padding-bottom: 3rem;
+}
+
+p,
+ul,
+ol {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+    text-wrap-style: pretty;
+}
+
+h1,
+h2,
+h3 {
+    font-family: var(--font-family-monospace);
+    font-weight: 400;
+    margin-bottom: 0.5rem;
+}
+
+hr {
+    color: color-mix(
+        in srgb,
+        currentColor,
+        transparent var(--transparency-line)
+    );
+    margin-bottom: 2rem;
+}
+
+a[href] {
+    color: var(--color-link);
+}
+
+a[href]:visited {
+    color: var(--color-link__visited);
+}
+
+a[href].interactive:visited {
+    color: var(--color-link);
+}
+
+a[href].interactive.active,
+a[href]:hover,
+a[href]:active {
+    color: var(--color-link__active);
+}
+
+a,
+a u {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.175em;
+    text-decoration-color: color-mix(
+        in srgb,
+        currentColor,
+        transparent var(--transparency-line)
+    );
+    text-decoration-skip: none;
+    text-decoration-skip-ink: none;
+    transition:
+        color 0.25s ease-in,
+        text-decoration-color 0.25s ease-in;
+}
+
+a:hover,
+a:hover u {
+    text-decoration-color: currentColor;
+    transition:
+        color 0.05s ease-in,
+        text-decoration-color 0.05s ease-in;
+}
+
+a:visited:hover,
+a:visited:hover u {
+    text-decoration-color: currentColor;
+    transition:
+        color 0.05s ease-in,
+        text-decoration-color 0.05s ease-in;
+}
+
+q,
+span.ui {
+    display: inline-block;
+    font-family: var(--font-family-monospace);
+    font-weight: 400;
+    quotes: none;
+    background-color: var(--color-codeBackground);
+    word-break: keep-all;
+    white-space: nowrap;
+    box-decoration-break: none;
+    /*margin-block: 0.2rem;*/
+    border-radius: 0.2rem;
+    padding-inline-start: 0.4rem;
+    padding-inline-end: 0.4rem;
+}
+
+.perks {
+    position: relative;
+    display: flex;
+    gap: 1.4rem;
+}
+
+@media (max-width: 700px) {
+    .perks {
+        flex-direction: column;
+    }
+}
+
+.perk-card {
+    /*background-color: var(--color-codeBackground);*/
+    border-radius: 0.4rem;
+}
+
+.instructions .instruction {
+    min-height: 200px;
+}
+
+.perk-card h2 {
+    text-transform: uppercase;
+    font-size: var(--font-size-text);
+    margin-bottom: 0;
+    letter-spacing: 0.05rem;
+}
+
+.perk-card p {
+    font-size: var(--font-size-caption);
+    hyphens: auto;
+    hyphenate-limit-chars: 8 4 4;
+    -webkit-hyphenate-limit-before: 4;
+    -webkit-hyphenate-limit-after: 4;
+}
+
+label,
+input,
+select {
+    margin-bottom: 0.5rem;
+    font-size: var(--font-size-text);
+}
+
+label {
+    padding-inline-end: 0.5rem;
+}
+
+input,
+select {
+    max-width: 8rem;
+    font-family: var(--font-family-monospace);
+    border-radius: 0.4rem;
+    padding-inline: 0.4rem;
+}
+
+.hint {
+    color: color-mix(in srgb, var(--color-text), transparent 40%);
+    font-size: var(--font-size-caption);
+}
+
+.hint q {
+    padding: 0;
 }

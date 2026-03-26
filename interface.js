@@ -6,7 +6,6 @@ const DB_NAME = "bangDB";
 const DB_SCHEMA = 5;
 const BANG_STORE_NAME = "bangData";
 const CACHE_STORE_NAME = "bangCache";
-const BANG_JSON_PATH = "/data/kagi.json";
 
 const getStoredLang = () => {
     const stored = localStorage.getItem(LANG_STORAGE_KEY);
@@ -18,26 +17,11 @@ const getStoredLang = () => {
 };
 
 const loadStrings = async (lang) => {
-    const response = await fetch(`/ui/${lang}.json`, { cache: "no-cache" });
+    const response = await fetch(`./ui/${lang}.json`, { cache: "no-cache" });
     if (!response.ok) {
         throw new Error(`Failed to load /ui/${lang}.json`);
     }
     return response.json();
-};
-
-const isMobile = () =>
-    /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
-
-const isFirefox = () => /Firefox/i.test(navigator.userAgent);
-
-const getInstructionKey = () => {
-    if (isFirefox() && !isMobile()) {
-        return "firefoxDesktop";
-    }
-    if (isFirefox() && isMobile()) {
-        return "firefoxMobile";
-    }
-    return "chromeMobile";
 };
 
 const getDefaultBangValue = () => {
@@ -106,124 +90,114 @@ const clearDefaultBangCache = async () => {
     tx.onerror = () => db.close();
 };
 
-const appendStep = (li, step) => {
-    if (typeof step === "string") {
-        li.textContent = step;
-        return;
-    }
-
-    if (step && typeof step === "object") {
-        if (typeof step.text === "string") {
-            li.append(step.text);
-        }
-        if (step.link) {
-            const anchor = document.createElement("a");
-            if (typeof step.link === "string") {
-                anchor.href = step.link;
-                anchor.textContent = step.linkText || step.link;
-            } else if (typeof step.link === "object") {
-                anchor.href = step.link.href || "";
-                anchor.textContent = step.link.text || step.link.href || "";
-            }
-            if (anchor.textContent) {
-                li.append(anchor);
-            }
-        }
-        if (typeof step.highlight === "string") {
-            const span = document.createElement("span");
-            span.textContent = step.highlight;
-            li.append(span);
-        }
-        if (typeof step.textAfter === "string") {
-            li.append(step.textAfter);
-        }
-    }
+const getNestedValue = (source, path) => {
+    return path.split(".").reduce((acc, key) => acc?.[key], source);
 };
 
-const renderHomepage = (strings) => {
-    const body = document.body;
-    body.replaceChildren();
-
-    const title = document.createElement("h1");
-    title.textContent = strings.title || "Search Thru!";
-    body.append(title);
-
-    const installHeading = document.createElement("h2");
-    installHeading.textContent =
-        strings.installation?.heading || "installation instructions";
-    body.append(installHeading);
-
-    const instructionKey = getInstructionKey();
-    const steps =
-        strings.installation?.[instructionKey]?.steps ||
-        strings.installation?.chromeMobile?.steps ||
-        strings.installation?.firefoxMobile?.steps ||
-        [];
-
-    const ol = document.createElement("ol");
-    steps.forEach((step) => {
-        const li = document.createElement("li");
-        appendStep(li, step);
-        ol.append(li);
-    });
-    body.append(ol);
-
-    const settingsHeading = document.createElement("h2");
-    settingsHeading.textContent = strings.settings?.heading || "settings";
-    body.append(settingsHeading);
-
-    const label = document.createElement("label");
-    label.htmlFor = "defaultBang";
-    label.textContent =
-        strings.settings?.defaultBangLabel || "default engine bang";
-    body.append(label);
-
-    const input = document.createElement("input");
-    input.id = "defaultBang";
-    input.name = "defaultBang";
-    input.type = "text";
-    input.placeholder = strings.settings?.defaultBangPlaceholder || "ddg";
-    input.value = getDefaultBangValue();
-    input.addEventListener("input", async () => {
-        const value = input.value.trim();
-        if (!value) {
-            localStorage.removeItem("defaultBang");
-            await clearDefaultBangCache();
+const applyTranslations = (strings, lang) => {
+    document.documentElement.lang = lang;
+    const nodes = document.querySelectorAll("[data-i18n]");
+    nodes.forEach((node) => {
+        if (node.querySelector("[data-i18n]")) {
             return;
         }
-        const normalized = value.replace(/^!+/, "").trim();
-        if (!normalized) {
-            localStorage.removeItem("defaultBang");
-            await clearDefaultBangCache();
-            return;
+        const key = node.getAttribute("data-i18n");
+        const value = getNestedValue(strings, key);
+        if (typeof value === "string") {
+            node.innerHTML = value;
         }
-        if (value.startsWith("!")) {
-            input.value = normalized;
-        }
-        localStorage.setItem("defaultBang", normalized);
-        await setDefaultBangCache(normalized.toLowerCase());
     });
-    body.append(input);
 };
 
-document.addEventListener("DOMContentLoaded", async () => {
-    const lang = getStoredLang();
+const setLanguage = async (lang) => {
     let strings;
-
     try {
         strings = await loadStrings(lang);
     } catch (error) {
         if (lang !== DEFAULT_LANG) {
             localStorage.setItem(LANG_STORAGE_KEY, DEFAULT_LANG);
             strings = await loadStrings(DEFAULT_LANG);
+            lang = DEFAULT_LANG;
         } else {
             console.error(error);
             strings = {};
         }
     }
+    localStorage.setItem(LANG_STORAGE_KEY, lang);
+    applyTranslations(strings, lang);
+};
 
-    renderHomepage(strings);
-    document.documentElement.style.visibility = "visible";
+document.addEventListener("DOMContentLoaded", async () => {
+    const lang = getStoredLang();
+    await setLanguage(lang);
+
+    const langSelect = document.getElementById("language");
+    if (langSelect) {
+        langSelect.value = lang;
+        langSelect.addEventListener("change", () => {
+            const next = langSelect.value || DEFAULT_LANG;
+            setLanguage(next);
+        });
+    }
+
+    const tabs = document.querySelectorAll('.browser-selector a[href^="#"]');
+    const panels = Array.from(tabs)
+        .map((tab) => document.querySelector(tab.getAttribute("href")))
+        .filter(Boolean);
+
+    const setActiveTab = (tab) => {
+        tabs.forEach((item) => item.classList.remove("active"));
+        tab.classList.add("active");
+        const targetId = tab.getAttribute("href");
+        panels.forEach((panel) => {
+            panel.style.display = `#${panel.id}` === targetId ? "" : "none";
+        });
+        if (targetId) {
+            history.replaceState(null, "", targetId);
+        }
+    };
+
+    if (tabs.length) {
+        const activeTab = Array.from(tabs).find((tab) =>
+            tab.classList.contains("active"),
+        );
+        const hashTab = Array.from(tabs).find(
+            (tab) => tab.getAttribute("href") === location.hash,
+        );
+        const initial = activeTab || hashTab || tabs[0];
+        if (initial) setActiveTab(initial);
+
+        tabs.forEach((tab) => {
+            tab.addEventListener("click", (event) => {
+                event.preventDefault();
+                setActiveTab(tab);
+            });
+        });
+    }
+
+    const input = document.getElementById("defaultBang");
+    if (input) {
+        input.value = getDefaultBangValue();
+        input.addEventListener("input", async () => {
+            const value = input.value.trim();
+            if (!value) {
+                localStorage.removeItem("defaultBang");
+                await clearDefaultBangCache();
+                return;
+            }
+            const normalized = value.replace(/^!+/, "").trim();
+            if (!normalized) {
+                localStorage.removeItem("defaultBang");
+                await clearDefaultBangCache();
+                return;
+            }
+            if (value.startsWith("!")) {
+                input.value = normalized;
+            }
+            localStorage.setItem("defaultBang", normalized);
+            await setDefaultBangCache(normalized.toLowerCase());
+        });
+    }
 
     const defaultBangValue = getDefaultBangValue();
     if (defaultBangValue) {

@@ -245,7 +245,7 @@ self.addEventListener("install", (event) => {
             await cache.addAll([
                 "/",
                 "/index.html",
-                "/global.css",
+                // "/global.css",
                 "/interface.js",
                 "/assets/favicon.png",
                 "/assets/favicon.svg",

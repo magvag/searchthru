@@ -1,58 +1,89 @@
 {
     "title": "Search Thru!",
-    "installation": {
-        "heading": "installation instructions",
-        "firefoxDesktop": {
-            "steps": [
-                {
-                    "text": "right click on URL, select ",
-                    "highlight": "Add “Thru!”"
-                },
-                {
-                    "link": {
-                        "href": "about:settings#search",
-                        "text": "about:settings#search"
-                    },
-                    "textAfter": ", set as default search engine"
-                }
-            ]
+    "tagline": "A local search engine router",
+    "description": {
+        "lead": "Use DuckDuckGo/Kagi !bangs to search directly on any of 10\u00a0000+ supported websites. For example,",
+        "examples": {
+            "1": {
+                "query": "caesar !w",
+                "description": "opens Julius Caesar's Wiki page,"
+            },
+            "2": {
+                "query": "!pin bauhaus",
+                "description": "leads to 1920’s Pinterest, and"
+            },
+            "3": {
+                "query": "cute cats !yt",
+                "description": "should speak for itself."
+            }
         },
-        "chromeMobile": {
-            "steps": [
-                {
-                    "link": {
-                        "href": "chrome://settings/searchEngines",
-                        "text": "chrome://settings/searchEngines"
-                    },
-                    "textAfter": " — add new search engine"
-                },
-                {
-                    "text": "Name: Thru!, Key: thru, Link: ",
-                    "highlight": "https://searchth.ru/?q=%s"
-                },
-                "Three dots › Set as default"
-            ]
+        "bookmarks": {
+            "start": "Bangs also work as bookmarks for homepages: use",
+            "1": "!r",
+            "2": "!a",
+            "3": "!gh",
+            "4": "!x",
+            "end": "to open Reddit, Amazon, Github, and X."
+        }
+    },
+    "perks": {
+        "speed": {
+            "title": "Fast.",
+            "description": {
+                "start": "Thru! redirects your query in ~0.1 second: faster than DDG, Kagi or",
+                "link": "other local routers."
+            }
         },
-        "firefoxMobile": {
-            "steps": [
-                {
-                    "link": {
-                        "href": "about:settings#search",
-                        "text": "about:settings#search"
-                    },
-                    "textAfter": " — add new search engine"
-                },
-                {
-                    "text": "Name: Thru!, Key: thru, Link: ",
-                    "highlight": "https://searchth.ru/?q=%s"
-                },
-                "Three dots › Set as default"
-            ]
+        "privacy": {
+            "title": "Private.",
+            "description": {
+                "start": "Thru! works locally and have no way to store your search history — check out",
+                "link": "the source code",
+                "end": "to confirm."
+            }
+        },
+        "customization": {
+            "title": "Customizable.",
+            "description": "You can change the search engine from DuckDuckGo to Google or anything else. More features are coming."
+        }
+    },
+    "instructions": {
+        "title": "Install",
+        "browsers": {
+            "chrome": "Chrome",
+            "firefox": "Firefox",
+            "safari": "Safari"
+        },
+        "chrome": {
+            "title": "Chrome, Yandex Browser, Opera, etc.",
+            "1": "Go to Settings › Search engine › Manage search engines and site searches",
+            "2": "Scroll to <q>Site search</q> and click <q>Add</q> button",
+            "3": "Set <q>Name</q> and <q>Shortcut</q> fields to anything you want",
+            "4": {
+                "start": "Set <q>URL...</q> to",
+                "end": "and click <q>Add</q>"
+            },
+            "5": "Click on three dots <span class=\"ui\">⋮</span> and select <q>Make default</q>"
+        },
+        "firefox": {
+            "title": "Firefox, Zen, etc.",
+            "1": "Right click on URL in address bar of this page",
+            "2": "Click <q>Add “Thru!”</q>",
+            "3": "Go to Setting › Search and choose Thru! as a default search engine"
+        },
+        "safari": {
+            "title": "Safari",
+            "1": "Safari does not support custom search engines, stay tuned for a browser extension."
         }
     },
     "settings": {
-        "heading": "settings",
-        "defaultBangLabel": "default engine bang",
-        "defaultBangPlaceholder": "ddg"
+        "title": "Settings",
+        "default-bang": {
+            "setting": "Default engine bang",
+            "help": "Use <q>!g</q> for Google, <q>!ya</q> for Yandex and <q>!b</q> for Bing."
+        },
+        "language": {
+            "setting": "Language"
+        }
     }
 }
