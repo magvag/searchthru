@@ -140,39 +140,68 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
-    const tabs = document.querySelectorAll('.browser-selector a[href^="#"]');
-    const panels = Array.from(tabs)
-        .map((tab) => document.querySelector(tab.getAttribute("href")))
-        .filter(Boolean);
-
-    const setActiveTab = (tab) => {
-        tabs.forEach((item) => item.classList.remove("active"));
-        tab.classList.add("active");
-        const targetId = tab.getAttribute("href");
-        panels.forEach((panel) => {
-            panel.style.display = `#${panel.id}` === targetId ? "" : "none";
-        });
-        if (targetId) {
-            history.replaceState(null, "", targetId);
-        }
-    };
-
-    if (tabs.length) {
-        const activeTab = Array.from(tabs).find((tab) =>
-            tab.classList.contains("active"),
+    const tablist = document.querySelector(".browser-selector[role='tablist']");
+    if (tablist) {
+        const tabs = Array.from(tablist.querySelectorAll('a[role="tab"]'));
+        const panels = tabs.map((tab) =>
+            document.getElementById(tab.getAttribute("aria-controls")),
         );
-        const hashTab = Array.from(tabs).find(
-            (tab) => tab.getAttribute("href") === location.hash,
-        );
-        const initial = activeTab || hashTab || tabs[0];
-        if (initial) setActiveTab(initial);
+
+        const activate = (tab) => {
+            tabs.forEach((t, i) => {
+                const active = t === tab;
+                t.classList.toggle("active", active);
+                t.setAttribute("aria-selected", String(active));
+                t.setAttribute("tabindex", active ? "0" : "-1");
+                if (panels[i]) panels[i].hidden = !active;
+            });
+        };
 
         tabs.forEach((tab) => {
-            tab.addEventListener("click", (event) => {
-                event.preventDefault();
-                setActiveTab(tab);
+            tab.addEventListener("click", (e) => {
+                e.preventDefault();
+                activate(tab);
+                tab.focus();
             });
         });
+
+        tablist.addEventListener("keydown", (e) => {
+            const current = tabs.indexOf(document.activeElement);
+            if (current === -1) return;
+            let next = -1;
+            if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+                next = (current + 1) % tabs.length;
+            } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+                next = (current - 1 + tabs.length) % tabs.length;
+            } else if (e.key === "Home") {
+                next = 0;
+            } else if (e.key === "End") {
+                next = tabs.length - 1;
+            }
+            if (next !== -1) {
+                e.preventDefault();
+                activate(tabs[next]);
+                tabs[next].focus();
+            }
+        });
+
+        const ua = navigator.userAgent;
+        let initial = tabs[0];
+        if (/Firefox/i.test(ua)) {
+            initial =
+                tabs.find(
+                    (t) => t.getAttribute("aria-controls") === "firefox",
+                ) || initial;
+        } else if (
+            /Safari/i.test(ua) &&
+            !/Chrome|Chromium|Edg|OPR|YaBrowser/i.test(ua)
+        ) {
+            initial =
+                tabs.find(
+                    (t) => t.getAttribute("aria-controls") === "safari",
+                ) || initial;
+        }
+        activate(initial);
     }
 
     const input = document.getElementById("defaultBang");
@@ -198,6 +227,16 @@ document.addEventListener("DOMContentLoaded", async () => {
             await setDefaultBangCache(normalized.toLowerCase());
         });
     }
+
+    document.querySelectorAll("a.interactive.copy").forEach((link) => {
+        link.addEventListener("click", (e) => {
+            e.preventDefault();
+            navigator.clipboard.writeText(link.href).then(() => {
+                link.classList.add("copied");
+                setTimeout(() => link.classList.remove("copied"), 2000);
+            });
+        });
+    });
 
     const defaultBangValue = getDefaultBangValue();
     if (defaultBangValue) {

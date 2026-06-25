@@ -133,115 +133,102 @@
                 </p>
             </div>
         </div>
-        <div class="instructions">
-            <script>
-                document.addEventListener("DOMContentLoaded", () => {
-                    const links = document.querySelectorAll(
-                        '.browser-selector a[href^="#"]',
-                    );
-                    if (!links.length) return;
-
-                    const ua = navigator.userAgent;
-                    let target = "#chrome";
-                    if (/Firefox/i.test(ua)) {
-                        target = "#firefox";
-                    } else if (
-                        /Safari/i.test(ua) &&
-                        !/Chrome|Chromium|Edg|OPR|YaBrowser/i.test(ua)
-                    ) {
-                        target = "#safari";
-                    }
-
-                    const match = Array.from(links).find(
-                        (link) => link.getAttribute("href") === target,
-                    );
-                    if (match) {
-                        links.forEach((link) =>
-                            link.classList.remove("active"),
-                        );
-                        match.classList.add("active");
-                    }
-                });
-            </script>
-            <h2>Install</h2>
-            <div class="browser-selector">
-                <a
-                    href="#chrome"
-                    class="interactive select active"
-                    data-i18n="instructions.browsers.chrome"
-                    >Chrome</a
-                >
-                <a
-                    href="#firefox"
-                    class="interactive select"
-                    data-i18n="instructions.browsers.firefox"
-                    >Firefox</a
-                >
-                <a
-                    href="#safari"
-                    class="interactive select"
-                    data-i18n="instructions.browsers.safari"
-                    >Safari</a
-                >
-            </div>
-            <div id="chrome" class="instruction">
-                <h3>
-                    Chrome, Yandex Browser, Opera, etc.
-                </h3>
-                <ol>
-                    <li>
-                        Go to Settings › Search engine › Manage search engines
-                        and site searches
-                    </li>
-                    <li>
-                        Scroll to <q>Site search</q> and click <q>Add</q> button
-                    </li>
-                    <li>
-                        Set <q>Name</q> and <q>Shortcut</q> fields to anything
-                        you want
-                    </li>
-                    <li>
-                        <span>
-                            Set <q>URL...</q> to
-                        </span>
-                        <a
-                            href="https://searchth.ru/?q=%s"
-                            class="interactive copy"
-                            >https://searchth.ru/?q=%s</a
-                        >
-                        <span>
-                            and click <q>Add</q>
-                        </span>
-                    </li>
-                    <li>
-                        Click on three dots <span class="ui">⋮</span> and select
-                        <q>Make default</q>
-                    </li>
-                </ol>
-            </div>
-            <div id="firefox" class="instruction">
-                <h3>
-                    Firefox, Zen, etc.
-                </h3>
-                <ol>
-                    <li>
-                        Right click on URL in address bar of this page
-                    </li>
-                    <li>
-                        Click <q>Add “Thru!”</q>
-                    </li>
-                    <li>
-                        Go to Setting › Search and choose Thru! as a default
-                        search engine
-                    </li>
-                </ol>
-            </div>
-            <div id="safari" class="instruction">
-                <h3>Safari</h3>
-                <p>
-                    Safari does not support custom search engines, stay tuned
-                    for a browser extension.
-                </p>
+        <div class="instructions-section">
+            <ul class="browser-selector" role="tablist">
+                <li role="presentation">
+                    <a
+                        href="#chrome"
+                        role="tab"
+                        tabindex="0"
+                        aria-selected="true"
+                        aria-controls="chrome"
+                        class="interactive select active"
+                        data-i18n="instructions.browsers.chrome"
+                        >Chrome</a
+                    >
+                </li>
+                <li role="presentation">
+                    <a
+                        href="#firefox"
+                        role="tab"
+                        tabindex="-1"
+                        aria-selected="false"
+                        aria-controls="firefox"
+                        class="interactive select"
+                        data-i18n="instructions.browsers.firefox"
+                        >Firefox</a
+                    >
+                </li>
+                <li role="presentation">
+                    <a
+                        href="#safari"
+                        role="tab"
+                        tabindex="-1"
+                        aria-selected="false"
+                        aria-controls="safari"
+                        class="interactive select"
+                        data-i18n="instructions.browsers.safari"
+                        >Safari</a
+                    >
+                </li>
+            </ul>
+            <div class="instructions-container">
+                <div id="chrome" class="instruction" role="tabpanel">
+                    <h2>
+                        Install for Chrome, Brave, Opera...
+                    </h2>
+                    <ol>
+                        <li>
+                            Go to <em>Settings › Search engine › Manage search engines
+                            and site searches</em>
+                        </li>
+                        <li>
+                            Scroll to <q>Site search</q> and click <q>Add</q> button
+                        </li>
+                        <li>
+                            Set <q>Name</q> and <q>Shortcut</q> fields to anything
+                            you want
+                        </li>
+                        <li>
+                            <span>
+                                Set <q>URL...</q> to
+                            </span>
+                            <a
+                                href="https://searchth.ru/?q=%s"
+                                class="interactive copy"
+                                >https://searchth.ru/?q=%s</a
+                            >
+                        </li>
+                        <li>
+                            <q>Add</q> the search engine, click on three dots <span class="ui">⋮</span> and select
+                            <q>Make default</q>
+                        </li>
+                    </ol>
+                </div>
+                <div id="firefox" class="instruction" role="tabpanel">
+                    <h2>
+                        Install for Firefox, Zen...
+                    </h2>
+                    <ol>
+                        <li>
+                            Right click on URL in address bar of this page
+                        </li>
+                        <li>
+                            Click <q>Add "Thru!"</q>
+                        </li>
+                        <li>
+                            Go to <em>Settings › Search</em> and choose Thru! as a default
+                            search engine
+                        </li>
+                    </ol>
+                </div>
+                <div id="safari" class="instruction" role="tabpanel">
+                    <h2>Install for Safari</h2>
+                    <p>
+                        Safari does not support custom search engines, stay tuned
+                        for a browser extension.
+                    </p>
+                </div>
             </div>
         </div>
         <hr>

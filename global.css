@@ -17,6 +17,10 @@
         white,
         color-mix(in srgb, var(--color-text), transparent 90%)
     );
+    --color-tabBackground: light-dark(
+        white,
+        color-mix(in srgb, var(--color-text), transparent 90%)
+    );
 }
 
 :root {
@@ -40,6 +44,15 @@
 
 * {
     box-sizing: border-box;
+}
+
+*:focus {
+    outline: none;
+}
+
+*:focus-visible {
+    outline: 2px solid var(--color-link);
+    outline-offset: 2px;
 }
 
 @view-transition {
@@ -78,7 +91,7 @@
 :root {
     --font-family:
         "Georgia", "Palatino Linotype", "Book Antiqua", Palatino,
-        "IBM Plex Serif" serif;
+        "IBM Plex Serif", serif;
     --font-family-sans:
         -apple-system, BlinkMacSystemFont, "Segoe UI", "San Francisco",
         Helvetica, Arial, sans-serif;
@@ -107,6 +120,10 @@ html {
     html,
     body {
         margin: 0 2%;
+    }
+
+    .instructions-container {
+        padding: 0;
     }
 }
 
@@ -197,20 +214,32 @@ a:visited:hover u {
         text-decoration-color 0.05s ease-in;
 }
 
+hr {
+    display: none;
+}
+
 q,
 span.ui {
     display: inline-block;
-    font-family: var(--font-family-sans);
     font-weight: 400;
-    quotes: none;
+    font-family: var(--font-family-sans);
     background-color: var(--color-codeBackground);
     word-break: keep-all;
     white-space: nowrap;
-    box-decoration-break: none;
-    /*margin-block: 0.2rem;*/
+    box-decoration-break: clone;
+    margin-block: 0.12rem;
+    line-height: 1.35;
     border-radius: 0.2rem;
     padding-inline-start: 0.4rem;
     padding-inline-end: 0.4rem;
+}
+
+q {
+    quotes: none;
+}
+
+span.ui {
+    font-family: var(--font-family-sans);
 }
 
 .perks {
@@ -275,4 +304,109 @@ select {
 
 .hint q {
     padding: 0;
+}
+
+a[href].copy,
+a[href].copy:visited {
+    font-family: var(--font-family-monospace);
+    margin-inline-start: 0.25rem;
+    text-decoration: none;
+    color: color-mix(in srgb, var(--color-secondary), transparent 30%);
+}
+
+a[href].copy.copied::after,
+a[href].copy.copied:visited::after {
+    content: "✓ Copied";
+    font-family: var(--font-family-sans);
+    font-size: var(--font-size-caption);
+    text-decoration: none !important;
+    margin-inline-start: 0.5rem;
+    padding: 0.15rem 0.25rem;
+    border-radius: 0.25rem;
+    background-color: color-mix(in srgb, var(--color-text), transparent 90%);
+    animation: fade-out 2s forwards;
+}
+
+.browser-selector {
+    display: inline-flex;
+    list-style: none;
+    margin: 0 0 0.5rem;
+    padding: 0;
+    border: 1px solid
+        color-mix(in srgb, var(--color-secondary), transparent 80%);
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.browser-selector li {
+    display: contents;
+}
+
+.browser-selector a[role="tab"] {
+    padding: 0.25rem 0.5rem;
+    font-family: var(--font-family-sans);
+    font-size: var(--font-size-caption);
+    color: var(--color-text);
+    background-color: var(--color-tabBackground);
+    text-decoration: none;
+    border-inline-end: 1px solid
+        color-mix(in srgb, var(--color-secondary), transparent 80%);
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.browser-selector li:last-child a[role="tab"] {
+    border-inline-end: none;
+}
+
+.browser-selector a[role="tab"]:hover {
+    background-color: color-mix(in srgb, var(--color-link), transparent 85%);
+}
+
+.browser-selector a[role="tab"].active {
+    background-color: var(--color-link);
+    color: white;
+    font-weight: 600;
+}
+
+.browser-selector a[role="tab"]:visited {
+    color: var(--color-text);
+}
+
+.browser-selector a[role="tab"].active:visited {
+    color: white;
+}
+
+.browser-selector:focus-within {
+    outline: 2px solid var(--color-link);
+    outline-offset: 2px;
+}
+
+.instructions-container {
+    background-color: var(--color-tabBackground);
+    --color-codeBackground: color-mix(
+        in srgb,
+        var(--color-primary),
+        transparent 50%
+    );
+    padding: 2rem;
+    font-size: 1.25rem;
+    border-radius: 0.5rem;
+    border: 1px solid
+        color-mix(in srgb, var(--color-secondary), transparent 80%);
+}
+
+.instructions-container h2 {
+    margin-top: 0;
+}
+
+@keyframes fade-out {
+    0%,
+    70% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
 }
