@@ -216,22 +216,67 @@
         <hr />
         <div class="settings">
             <h2>Настройки</h2>
-            <div id="defaults">
-                <label for="defaultBang">Банг поисковика по умолчанию</label>
-                <input
-                    type="text"
-                    id="defaultBang"
-                    name="defaultBang"
-                    placeholder="!ddg"
-                />
-                <p class="hint">
-                    Используйте <q>!g</q> для Google, <q>!ya</q> для Яндекса и
-                    <q>!b</q> для Bing.
-                </p>
-            </div>
-        </div>
-        <div class="settings">
             <div class="settings-grid">
+                <label for="defaultBang">Поисковик по умолчанию</label>
+                <div class="engine-picker">
+                    <input
+                        type="text"
+                        id="defaultBang"
+                        name="defaultBang"
+                        placeholder="!ddg"
+                    />
+                    <div
+                        class="engine-icons"
+                        role="radiogroup"
+                        aria-label="Поисковик по умолчанию"
+                    >
+                        <label class="engine-icon" aria-label="DuckDuckGo">
+                            <input
+                                type="radio"
+                                name="engine"
+                                value="ddg"
+                                data-bang="ddg"
+                            />
+                            <svg aria-hidden="true">
+                                <use
+                                    href="/assets/sprite.svg#ddg"
+                                    width="100%"
+                                    height="100%"
+                                />
+                            </svg>
+                        </label>
+                        <label class="engine-icon" aria-label="Google">
+                            <input
+                                type="radio"
+                                name="engine"
+                                value="g"
+                                data-bang="g"
+                            />
+                            <svg aria-hidden="true">
+                                <use
+                                    href="/assets/sprite.svg#g"
+                                    width="100%"
+                                    height="100%"
+                                />
+                            </svg>
+                        </label>
+                        <label class="engine-icon" aria-label="Yandex">
+                            <input
+                                type="radio"
+                                name="engine"
+                                value="ya"
+                                data-bang="ya"
+                            />
+                            <svg aria-hidden="true">
+                                <use
+                                    href="/assets/sprite.svg#ya"
+                                    width="100%"
+                                    height="100%"
+                                />
+                            </svg>
+                        </label>
+                    </div>
+                </div>
                 <label for="language">Язык</label>
                 <select id="language">
                     <option value="/">English</option>
