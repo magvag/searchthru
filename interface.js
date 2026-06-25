@@ -136,27 +136,71 @@ document.addEventListener("DOMContentLoaded", async () => {
         activate(initial);
     }
 
+    const PRESETS = [
+        { value: "ddg", bang: "ddg" },
+        { value: "g", bang: "g" },
+        { value: "ya", bang: "ya" },
+    ];
+
     const input = document.getElementById("defaultBang");
+    const radios = Array.from(
+        document.querySelectorAll('input[name="engine"]'),
+    );
+
+    const syncRadio = (bang) => {
+        const match = PRESETS.find((p) => p.bang === bang);
+        radios.forEach((r) => {
+            r.checked = match ? r.value === match.value : false;
+        });
+        if (input) input.placeholder = match ? `!${match.bang}` : "!bang";
+    };
+
     if (input) {
-        input.value = getDefaultBangValue();
+        const stored = getDefaultBangValue();
+        syncRadio(stored);
+        const isPreset = PRESETS.some((p) => p.bang === stored);
+        input.value = stored && !isPreset ? stored : "";
+
         input.addEventListener("input", async () => {
             const value = input.value.trim();
             if (!value) {
                 localStorage.removeItem("defaultBang");
+                syncRadio("");
                 await clearDefaultBangCache();
                 return;
             }
             const normalized = value.replace(/^!+/, "").trim();
             if (!normalized) {
                 localStorage.removeItem("defaultBang");
+                syncRadio("");
                 await clearDefaultBangCache();
                 return;
             }
-            if (value.startsWith("!")) {
-                input.value = normalized;
-            }
+            if (value.startsWith("!")) input.value = normalized;
+            syncRadio(normalized);
             localStorage.setItem("defaultBang", normalized);
             await setDefaultBangCache(normalized.toLowerCase());
+        });
+    }
+
+    radios.forEach((radio) => {
+        radio.addEventListener("change", async () => {
+            if (!radio.checked) return;
+            const preset = PRESETS.find((p) => p.value === radio.value);
+            if (!preset) return;
+            if (input) {
+                input.value = "";
+                input.placeholder = `!${preset.bang}`;
+            }
+            localStorage.setItem("defaultBang", preset.bang);
+            await setDefaultBangCache(preset.bang);
+        });
+    });
+
+    const langSelect = document.getElementById("language");
+    if (langSelect) {
+        langSelect.addEventListener("change", () => {
+            window.location.href = langSelect.value;
         });
     }
 
