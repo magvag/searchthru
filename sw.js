@@ -247,8 +247,6 @@ self.addEventListener("install", (event) => {
                 "/index.html",
                 "/global.css",
                 "/interface.js",
-                "/ui/en.json",
-                "/ui/ru.json",
                 "/assets/favicon.png",
                 "/assets/favicon.svg",
             ]);

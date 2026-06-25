@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="ru">
     <head>
         <style>
             :root {
@@ -25,9 +25,7 @@
             const url = new URL(window.location.href);
             const query = url.searchParams.get("q")?.trim() ?? "";
             if (query && !navigator.serviceWorker?.controller) {
-                const fallback = `https://duckduckgo.com/?q=${encodeURIComponent(
-                    query,
-                )}`;
+                const fallback = `https://duckduckgo.com/?q=${encodeURIComponent(query)}`;
                 window.location.replace(fallback);
             }
             if (!query) {
@@ -40,8 +38,20 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Search Thru!</title>
-        <meta name="description" content="A local search engine router." />
+        <meta
+            name="description"
+            content="Локальный маршрутизатор поисковых запросов."
+        />
         <meta property="og:site_name" content="Search Thru!" />
+
+        <link rel="canonical" href="https://searchth.ru/ru/" />
+        <link rel="alternate" hreflang="en" href="https://searchth.ru/" />
+        <link rel="alternate" hreflang="ru" href="https://searchth.ru/ru/" />
+        <link
+            rel="alternate"
+            hreflang="x-default"
+            href="https://searchth.ru/"
+        />
 
         <link
             rel="icon"
@@ -61,62 +71,45 @@
         <h1 id="title">Search Thru!</h1>
         <p id="tagline">Локальный маршрутизатор поисковых запросов</p>
         <p>
-            <span data-i18n="description.lead"
+            <span
                 >Используйте !bangs от DuckDuckGo/Kagi, чтобы искать напрямую на
-                любом из 10 000+ поддерживаемых сайтов. Например,</span
+                любом из 10 000+ поддерживаемых сайтов. Например,</span
             >
             <q>caesar !w</q>
-            <span data-i18n="description.examples.1.description"
-                >открывает страницу Юлия Цезаря в Википедии,</span
-            >
+            <span>открывает страницу Юлия Цезаря в Википедии,</span>
             <q>!pin bauhaus</q>
-            <span data-i18n="description.examples.2.description"
-                >ведёт к Pinterest 1920‑х, а</span
-            >
+            <span>ведёт к Pinterest 1920‑х, а</span>
             <q>cute cats !yt</q>
-            <span data-i18n="description.examples.3.description"
-                >говорит само за себя.</span
-            >
-            <span data-i18n="description.bookmarks.start"
+            <span>говорит само за себя.</span>
+            <span
                 >Банги также работают как закладки для главных страниц:
                 используйте</span
             >
-            <q>!r</q>, <q>!a</q>, <q>!gh</q>,
-            <q>!x</q>
-            <span data-i18n="description.bookmarks.end"
-                >чтобы открыть Reddit, Amazon, Github и X.</span
-            >
+            <q>!r</q>, <q>!a</q>, <q>!gh</q>, <q>!x</q>
+            <span>чтобы открыть Reddit, Amazon, Github и X.</span>
         </p>
         <div class="perks">
             <div class="perk-card">
                 <h2>Быстро.</h2>
                 <p>
-                    <span data-i18n="perks.speed.description.start"
+                    <span
                         >Thru! перенаправляет запрос за ~0,1 секунды: быстрее,
                         чем DDG, Kagi или</span
                     >
-                    <a
-                        href="https://unduck.link/"
-                        data-i18n="perks.speed.description.link"
-                        >другие локальные роутеры.</a
-                    >
+                    <a href="https://unduck.link/">другие локальные роутеры.</a>
                 </p>
             </div>
             <div class="perk-card">
                 <h2>Приватно.</h2>
                 <p>
-                    <span data-i18n="perks.privacy.description.start"
+                    <span
                         >Thru! работает локально и не может хранить историю
                         поиска — загляните в</span
                     >
-                    <a
-                        href="https://github.com/magvag/searchthru"
-                        data-i18n="perks.privacy.description.link"
+                    <a href="https://github.com/magvag/searchthru"
                         >исходный код</a
                     >
-                    <span data-i18n="perks.privacy.description.end"
-                        >чтобы убедиться.</span
-                    >
+                    <span>чтобы убедиться.</span>
                 </p>
             </div>
             <div class="perk-card">
@@ -127,119 +120,104 @@
                 </p>
             </div>
         </div>
-        <div class="instructions">
-            <script>
-                document.addEventListener("DOMContentLoaded", () => {
-                    const links = document.querySelectorAll(
-                        '.browser-selector a[href^="#"]',
-                    );
-                    if (!links.length) return;
-
-                    const ua = navigator.userAgent;
-                    let target = "#chrome";
-                    if (/Firefox/i.test(ua)) {
-                        target = "#firefox";
-                    } else if (
-                        /Safari/i.test(ua) &&
-                        !/Chrome|Chromium|Edg|OPR|YaBrowser/i.test(ua)
-                    ) {
-                        target = "#safari";
-                    }
-
-                    const match = Array.from(links).find(
-                        (link) => link.getAttribute("href") === target,
-                    );
-                    if (match) {
-                        links.forEach((link) =>
-                            link.classList.remove("active"),
-                        );
-                        match.classList.add("active");
-                    }
-                });
-            </script>
-            <h2>Установка</h2>
-            <div class="browser-selector">
-                <a
-                    href="#chrome"
-                    class="interactive select"
-                    data-i18n="instructions.browsers.chrome"
-                    >Chrome</a
-                >
-                <a
-                    href="#firefox"
-                    class="interactive select active"
-                    data-i18n="instructions.browsers.firefox"
-                    >Firefox</a
-                >
-                <a
-                    href="#safari"
-                    class="interactive select"
-                    data-i18n="instructions.browsers.safari"
-                    >Safari</a
-                >
-            </div>
-            <div id="chrome" class="instruction" style="display: none">
-                <h3>Chrome, Яндекс.Браузер, Opera и т. д.</h3>
-                <ol>
-                    <li>
-                        Откройте Настройки › Поисковая система › Управление
-                        поисковыми системами и поиском по сайтам
-                    </li>
-                    <li>
-                        Прокрутите до <q>Поиск по сайту</q> и нажмите
-                        <q>Добавить</q>
-                    </li>
-                    <li>
-                        В полях <q>Название</q> и <q>Ярлык</q> укажите любые
-                        значения
-                    </li>
-                    <li>
-                        <span data-i18n="instructions.chrome.4.start"
-                            >В поле <q>URL…</q> вставьте</span
-                        >
-                        <a
-                            href="https://searchth.ru/?q=%s"
-                            class="interactive copy"
-                            >https://searchth.ru/?q=%s</a
-                        >
-                        <span data-i18n="instructions.chrome.4.end"
-                            >и нажмите <q>Добавить</q></span
-                        >
-                    </li>
-                    <li>
-                        Нажмите на три точки <span class="ui">⋮</span> и
-                        выберите <q>Сделать по умолчанию</q>
-                    </li>
-                </ol>
-            </div>
-            <div id="firefox" class="instruction">
-                <h3>Firefox, Zen и т. д.</h3>
-                <ol>
-                    <li>Щёлкните правой кнопкой по адресной этой страницы</li>
-                    <li>Нажмите <q>Добавить “Thru!”</q></li>
-                    <li>
-                        Перейдите в Настройки › Поиск и выберите Thru! как
-                        поисковик по умолчанию
-                    </li>
-                </ol>
-            </div>
-            <div id="safari" class="instruction" style="display: none">
-                <h3>Safari</h3>
-                <p>
-                    Safari не поддерживает пользовательские поисковые системы,
-                    ждите расширение.
-                </p>
+        <div class="instructions-section">
+            <ul class="browser-selector" role="tablist">
+                <li role="presentation">
+                    <a
+                        href="#chrome"
+                        role="tab"
+                        tabindex="0"
+                        aria-selected="true"
+                        aria-controls="chrome"
+                        class="interactive select active"
+                        >Chrome</a
+                    >
+                </li>
+                <li role="presentation">
+                    <a
+                        href="#firefox"
+                        role="tab"
+                        tabindex="-1"
+                        aria-selected="false"
+                        aria-controls="firefox"
+                        class="interactive select"
+                        >Firefox</a
+                    >
+                </li>
+                <li role="presentation">
+                    <a
+                        href="#safari"
+                        role="tab"
+                        tabindex="-1"
+                        aria-selected="false"
+                        aria-controls="safari"
+                        class="interactive select"
+                        >Safari</a
+                    >
+                </li>
+            </ul>
+            <div class="instructions-container">
+                <div id="chrome" class="instruction" role="tabpanel">
+                    <h2>Установка для Chrome, Brave, Opera...</h2>
+                    <ol>
+                        <li>
+                            Откройте
+                            <em
+                                >Настройки › Поисковая система › Управление
+                                поисковыми системами и поиском по сайтам</em
+                            >
+                        </li>
+                        <li>
+                            Прокрутите до <q>Поиск по сайту</q> и нажмите
+                            <q>Добавить</q>
+                        </li>
+                        <li>
+                            В полях <q>Название</q> и <q>Ярлык</q> укажите любые
+                            значения
+                        </li>
+                        <li>
+                            <span>В поле <q>URL…</q> вставьте</span>
+                            <a
+                                href="https://searchth.ru/?q=%s"
+                                class="interactive copy"
+                                >https://searchth.ru/?q=%s</a
+                            >
+                        </li>
+                        <li>
+                            Нажмите <q>Добавить</q>, затем на три точки
+                            <span class="ui">⋮</span> и выберите
+                            <q>Сделать по умолчанию</q>
+                        </li>
+                    </ol>
+                </div>
+                <div id="firefox" class="instruction" role="tabpanel">
+                    <h2>Установка для Firefox, Zen...</h2>
+                    <ol>
+                        <li>
+                            Щёлкните правой кнопкой по адресной строке этой
+                            страницы
+                        </li>
+                        <li>Нажмите <q>Добавить "Thru!"</q></li>
+                        <li>
+                            Перейдите в <em>Настройки › Поиск</em> и выберите
+                            Thru! как поисковик по умолчанию
+                        </li>
+                    </ol>
+                </div>
+                <div id="safari" class="instruction" role="tabpanel">
+                    <h2>Установка для Safari</h2>
+                    <p>
+                        Safari не поддерживает пользовательские поисковые
+                        системы, ждите расширение.
+                    </p>
+                </div>
             </div>
         </div>
         <hr />
         <div class="settings">
             <h2>Настройки</h2>
             <div id="defaults">
-                <label
-                    for="defaultBang"
-                    data-i18n="settings.default-bang.setting"
-                    >Банг поисковика по умолчанию</label
-                >
+                <label for="defaultBang">Банг поисковика по умолчанию</label>
                 <input
                     type="text"
                     id="defaultBang"
@@ -253,18 +231,7 @@
             </div>
         </div>
         <div class="language">
-            <label for="language" data-i18n="settings.language.setting"
-                >Язык</label
-            >
-            <select id="language" name="language">
-                <option value="en">English</option>
-                <option value="ru">Русский</option>
-            </select>
+            <a href="/">English</a>
         </div>
-
-        <span
-            style="visibility: hidden"
-            id="__TIMER_INJECTION_FLAG__{a8cf72f7-09b7-4cd4-9aaa-7a023bf09916}"
-        ></span>
     </body>
 </html>

@@ -1,28 +1,9 @@
-const DEFAULT_LANG = "en";
-const LANG_STORAGE_KEY = "lang";
 const DEFAULT_BANG = "_default";
 
 const DB_NAME = "bangDB";
 const DB_SCHEMA = 5;
 const BANG_STORE_NAME = "bangData";
 const CACHE_STORE_NAME = "bangCache";
-
-const getStoredLang = () => {
-    const stored = localStorage.getItem(LANG_STORAGE_KEY);
-    if (stored && stored.trim()) {
-        return stored.trim();
-    }
-    localStorage.setItem(LANG_STORAGE_KEY, DEFAULT_LANG);
-    return DEFAULT_LANG;
-};
-
-const loadStrings = async (lang) => {
-    const response = await fetch(`./ui/${lang}.json`, { cache: "no-cache" });
-    if (!response.ok) {
-        throw new Error(`Failed to load /ui/${lang}.json`);
-    }
-    return response.json();
-};
 
 const getDefaultBangValue = () => {
     const raw = localStorage.getItem("defaultBang") || "";
@@ -90,56 +71,7 @@ const clearDefaultBangCache = async () => {
     tx.onerror = () => db.close();
 };
 
-const getNestedValue = (source, path) => {
-    return path.split(".").reduce((acc, key) => acc?.[key], source);
-};
-
-const applyTranslations = (strings, lang) => {
-    document.documentElement.lang = lang;
-    const nodes = document.querySelectorAll("[data-i18n]");
-    nodes.forEach((node) => {
-        if (node.querySelector("[data-i18n]")) {
-            return;
-        }
-        const key = node.getAttribute("data-i18n");
-        const value = getNestedValue(strings, key);
-        if (typeof value === "string") {
-            node.innerHTML = value;
-        }
-    });
-};
-
-const setLanguage = async (lang) => {
-    let strings;
-    try {
-        strings = await loadStrings(lang);
-    } catch (error) {
-        if (lang !== DEFAULT_LANG) {
-            localStorage.setItem(LANG_STORAGE_KEY, DEFAULT_LANG);
-            strings = await loadStrings(DEFAULT_LANG);
-            lang = DEFAULT_LANG;
-        } else {
-            console.error(error);
-            strings = {};
-        }
-    }
-    localStorage.setItem(LANG_STORAGE_KEY, lang);
-    applyTranslations(strings, lang);
-};
-
 document.addEventListener("DOMContentLoaded", async () => {
-    const lang = getStoredLang();
-    await setLanguage(lang);
-
-    const langSelect = document.getElementById("language");
-    if (langSelect) {
-        langSelect.value = lang;
-        langSelect.addEventListener("change", () => {
-            const next = langSelect.value || DEFAULT_LANG;
-            setLanguage(next);
-        });
-    }
-
     const tablist = document.querySelector(".browser-selector[role='tablist']");
     if (tablist) {
         const tabs = Array.from(tablist.querySelectorAll('a[role="tab"]'));
